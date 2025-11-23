@@ -16,7 +16,7 @@ export function TenantUsers({ users, tenantId }: TenantUsersProps) {
         switch (role) {
             case "SUPER_ADMIN":
                 return <Badge variant="destructive">Super Admin</Badge>
-            case "ADMIN":
+            case "BROKERAGE_ADMIN":
                 return <Badge variant="default">Admin</Badge>
             case "AGENT":
                 return <Badge variant="secondary">Agente</Badge>

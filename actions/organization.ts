@@ -13,8 +13,8 @@ export const updateMyOrganization = async (data: {
 }) => {
     const session = await auth()
 
-    // Solo ADMIN o SUPER_ADMIN pueden editar
-    if (session?.user?.role !== "ADMIN" && session?.user?.role !== "SUPER_ADMIN") {
+    // Solo BROKERAGE_ADMIN o SUPER_ADMIN pueden editar
+    if (session?.user?.role !== "BROKERAGE_ADMIN" && session?.user?.role !== "SUPER_ADMIN") {
         throw new Error("No autorizado")
     }
 
