@@ -52,7 +52,7 @@ export default async function TenantDetailPage({ params }: { params: Promise<{ i
                 </TabsContent>
 
                 <TabsContent value="billing">
-                    <BillingTable tenantId={id} initialRecords={billingRecords} />
+                    <BillingTable tenantId={id} records={billingRecords} />
                 </TabsContent>
 
                 <TabsContent value="users">

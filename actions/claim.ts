@@ -74,7 +74,7 @@ export const createClaim = async (values: z.infer<typeof ClaimSchema>) => {
         return { success: false, error: "Campos inválidos" }
     }
 
-    const { policyId, description, date, number } = validatedFields.data
+    const { policyId, number, date, description, status } = validatedFields.data
 
     try {
         // Verificar que la póliza pertenece al tenant
@@ -90,11 +90,11 @@ export const createClaim = async (values: z.infer<typeof ClaimSchema>) => {
         const claim = await prisma.claim.create({
             data: {
                 policyId,
-                description,
-                date,
                 number,
+                date,
+                description,
+                status: status || "REPORTED",
                 tenantId: session.user.tenantId,
-                status: "REPORTED",
             },
         })
 
