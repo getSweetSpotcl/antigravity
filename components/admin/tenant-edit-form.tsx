@@ -32,12 +32,12 @@ const TenantSchema = z.object({
     name: z.string().min(1, "El nombre es requerido"),
     planId: z.string().optional(),
     subscriptionStatus: z.string(),
-    maxUsers: z.coerce.number().min(1),
+    maxUsers: z.number().min(1),
 
-    customPrice: z.union([z.coerce.number(), z.string()]).optional().nullable(),
+    customPrice: z.union([z.number(), z.string()]).optional().nullable(),
     discountType: z.string().optional().nullable(),
-    discountValue: z.union([z.coerce.number(), z.string()]).optional().nullable(),
-    billingDay: z.coerce.number().min(1).max(28).default(1),
+    discountValue: z.union([z.number(), z.string()]).optional().nullable(),
+    billingDay: z.number().min(1).max(28).default(1),
     useCustomPrice: z.boolean().default(false),
 })
 
@@ -49,7 +49,7 @@ interface TenantEditFormProps {
 export function TenantEditForm({ tenant, plans }: TenantEditFormProps) {
     const router = useRouter()
 
-    const form = useForm<z.infer<typeof TenantSchema>>({
+    const form = useForm<any>({
         resolver: zodResolver(TenantSchema),
         defaultValues: {
             name: tenant.name,

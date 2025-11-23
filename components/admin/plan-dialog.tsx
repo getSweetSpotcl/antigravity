@@ -30,9 +30,9 @@ import { Plus, Pencil } from "lucide-react"
 const PlanSchema = z.object({
     name: z.string().min(1, "El nombre es requerido"),
     description: z.string().optional(),
-    price: z.coerce.number().min(0, "El precio debe ser mayor o igual a 0"),
-    maxUsers: z.coerce.number().min(1, "Mínimo 1 usuario"),
-    maxStorage: z.coerce.number().min(1, "Mínimo 1 GB"),
+    price: z.number().min(0, "El precio debe ser mayor o igual a 0"),
+    maxUsers: z.number().min(1, "Mínimo 1 usuario"),
+    maxStorage: z.number().min(1, "Mínimo 1 GB"),
     isActive: z.boolean().default(true),
 })
 
@@ -45,14 +45,14 @@ export function PlanDialog({ plan, trigger }: PlanDialogProps) {
     const [open, setOpen] = useState(false)
     const isEditing = !!plan
 
-    const form = useForm<z.infer<typeof PlanSchema>>({
+    const form = useForm<any>({
         resolver: zodResolver(PlanSchema),
         defaultValues: {
             name: plan?.name || "",
             description: plan?.description || "",
             price: plan?.price || 0,
             maxUsers: plan?.maxUsers || 5,
-            maxStorage: plan ? Number(plan.maxStorage) / (1024 * 1024 * 1024) : 1, // Convertir bytes a GB
+            maxStorage: plan ? Number(plan.maxStorage) / (1024 * 1024 * 1024) : 1,
             isActive: plan?.isActive ?? true,
         },
     })

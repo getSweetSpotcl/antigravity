@@ -48,7 +48,7 @@ export const CreateQuoteDialog = ({ clients, companies }: CreateQuoteDialogProps
     const [currentStep, setCurrentStep] = useState(1)
     const [isPending, startTransition] = useTransition()
 
-    const form = useForm<z.infer<typeof QuoteSchema>>({
+    const form = useForm<any>({
         resolver: zodResolver(QuoteSchema),
         defaultValues: {
             contractorName: "",
