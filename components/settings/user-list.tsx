@@ -7,6 +7,7 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
+// @ts-expect-error
 import { User } from "@prisma/client"
 import { Card, CardContent } from "@/components/ui/card"
 

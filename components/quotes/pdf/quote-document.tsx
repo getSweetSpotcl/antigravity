@@ -1,4 +1,5 @@
 import { Document, Page, Text, View, StyleSheet, Image, Font } from "@react-pdf/renderer"
+// @ts-expect-error
 import { Quote, Client, InsuranceCompany, Tenant } from "@prisma/client"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"

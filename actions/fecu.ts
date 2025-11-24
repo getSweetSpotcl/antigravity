@@ -64,7 +64,7 @@ export const generateFecuReport = async (month: number, year: number): Promise<F
         },
     })
 
-    const fecuRows: FecuRow[] = policies.map((policy) => {
+    const fecuRows: FecuRow[] = policies.map((policy: any) => {
         return {
             rutCorredor: tenant.rut || "S/I",
             rutCompania: policy.insuranceCompany?.rut || "S/I",

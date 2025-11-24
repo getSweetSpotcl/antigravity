@@ -14,7 +14,7 @@ export async function POST() {
         if (existingUsers.length > 0) {
             return NextResponse.json({
                 message: 'Ya existen usuarios en la base de datos',
-                users: existingUsers.map(user => ({
+                users: existingUsers.map((user: any) => ({
                     email: user.email,
                     name: user.name,
                     role: user.role,

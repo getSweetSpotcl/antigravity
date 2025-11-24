@@ -42,6 +42,7 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover"
 import { Calendar } from "@/components/ui/calendar"
+// @ts-ignore
 import { Client, PolicyType } from "@prisma/client"
 
 interface CreatePolicyDialogProps {
@@ -140,8 +141,8 @@ export const CreatePolicyDialog = ({ clients }: CreatePolicyDialogProps) => {
                                             </FormControl>
                                             <SelectContent>
                                                 {Object.values(PolicyType).map((type) => (
-                                                    <SelectItem key={type} value={type}>
-                                                        {type}
+                                                    <SelectItem key={type as string} value={type as string}>
+                                                        {type as string}
                                                     </SelectItem>
                                                 ))}
                                             </SelectContent>

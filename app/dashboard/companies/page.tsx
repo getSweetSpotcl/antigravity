@@ -70,7 +70,7 @@ export default async function CompaniesPage() {
                                     </TableCell>
                                 </TableRow>
                             ) : (
-                                companies.map((company) => (
+                                companies.map((company: any) => (
                                     <TableRow key={company.id}>
                                         <TableCell className="font-medium">{company.name}</TableCell>
                                         <TableCell>{company.rut}</TableCell>

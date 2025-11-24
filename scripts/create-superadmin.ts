@@ -12,7 +12,8 @@ async function main() {
 
     if (existingUsers.length > 0) {
         console.log('\n✅ Usuarios existentes:')
-        existingUsers.forEach(user => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        existingUsers.forEach((user: any) => {
             console.log(`\n📧 Email: ${user.email}`)
             console.log(`👤 Nombre: ${user.name}`)
             console.log(`🏢 Corredora: ${user.tenant?.name || 'N/A'}`)

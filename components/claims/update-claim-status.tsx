@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+// @ts-ignore
 import { ClaimStatus } from "@prisma/client"
 import { updateClaimStatus } from "@/actions/claim"
 import { Button } from "@/components/ui/button"

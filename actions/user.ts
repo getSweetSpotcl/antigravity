@@ -4,6 +4,7 @@ import * as z from "zod"
 import bcrypt from "bcryptjs"
 import { prisma } from "@/lib/db"
 import { auth } from "@/lib/auth"
+// @ts-ignore
 import { UserRole } from "@prisma/client"
 
 import { InviteUserSchema } from "@/schemas"

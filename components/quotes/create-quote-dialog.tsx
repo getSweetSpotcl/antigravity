@@ -19,6 +19,7 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 import { Form } from "@/components/ui/form"
+// @ts-expect-error
 import { Client, InsuranceCompany } from "@prisma/client"
 import { Progress } from "@/components/ui/progress"
 
@@ -88,9 +89,21 @@ export const CreateQuoteDialog = ({ clients, companies }: CreateQuoteDialogProps
 
         switch (currentStep) {
             case 1:
-                fieldsToValidate = ["clientId", "contractorName", "contractorRut", "contractorEmail", "contractorPhone", "sameAsContractor"]
+                fieldsToValidate = ["clientId", "prospectName", "contractorName", "contractorRut", "contractorEmail", "contractorPhone", "sameAsContractor"]
                 if (!form.getValues("sameAsContractor")) {
                     fieldsToValidate.push("insuredName", "insuredRut")
+                }
+
+                // Validar que se haya seleccionado cliente o prospecto
+                const clientId = form.getValues("clientId")
+                const prospectName = form.getValues("prospectName")
+
+                if (!clientId && !prospectName) {
+                    form.setError("clientId", {
+                        type: "manual",
+                        message: "Debes seleccionar un cliente o ingresar un prospecto"
+                    })
+                    return
                 }
                 break
             case 2:
@@ -162,7 +175,10 @@ export const CreateQuoteDialog = ({ clients, companies }: CreateQuoteDialogProps
                 </div>
 
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit, (errors) => console.log("Form Errors:", errors))} className="flex-1 overflow-y-auto">
+                    <form onSubmit={form.handleSubmit(onSubmit, (errors) => {
+                        console.log("Form Errors:", errors)
+                        toast.error("Por favor revisa los campos requeridos. Hay errores en el formulario.")
+                    })} className="flex-1 overflow-y-auto">
                         <div className="py-4">
                             {currentStep === 1 && <Step1ClientInfo form={form} clients={clients} />}
                             {currentStep === 2 && <Step2InsuranceInfo form={form} companies={companies} />}

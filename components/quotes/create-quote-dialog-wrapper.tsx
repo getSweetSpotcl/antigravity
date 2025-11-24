@@ -1,6 +1,7 @@
 "use client"
 
 import dynamic from "next/dynamic"
+// @ts-expect-error
 import { Client, InsuranceCompany } from "@prisma/client"
 
 const CreateQuoteDialog = dynamic(

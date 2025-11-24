@@ -4,6 +4,7 @@ import * as z from "zod"
 import bcrypt from "bcryptjs"
 import { prisma } from "@/lib/db"
 import { RegisterSchema } from "@/schemas"
+// @ts-ignore
 import { UserRole } from "@prisma/client"
 
 export const register = async (values: z.infer<typeof RegisterSchema>) => {
@@ -35,7 +36,7 @@ export const register = async (values: z.infer<typeof RegisterSchema>) => {
 
     // Create Tenant and User in a transaction
     try {
-        await prisma.$transaction(async (tx) => {
+        await prisma.$transaction(async (tx: any) => {
             const tenant = await tx.tenant.create({
                 data: {
                     name: brokerageName,

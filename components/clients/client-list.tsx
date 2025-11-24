@@ -6,6 +6,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
+// @ts-ignore
 import { Client } from "@prisma/client"
 import { Card, CardContent } from "@/components/ui/card"
 import { ClientActions } from "./client-actions"

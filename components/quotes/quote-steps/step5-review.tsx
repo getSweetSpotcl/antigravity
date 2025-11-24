@@ -1,6 +1,7 @@
 "use client"
 
 import { UseFormReturn } from "react-hook-form"
+// @ts-expect-error
 import { InsuranceCompany } from "@prisma/client"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"

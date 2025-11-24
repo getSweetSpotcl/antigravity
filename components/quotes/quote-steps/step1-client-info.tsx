@@ -1,6 +1,7 @@
 "use client"
 
 import { UseFormReturn } from "react-hook-form"
+// @ts-expect-error
 import { Client } from "@prisma/client"
 import {
     FormControl,

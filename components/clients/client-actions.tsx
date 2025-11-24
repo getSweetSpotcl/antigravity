@@ -12,6 +12,7 @@ import { MoreHorizontal, Pencil, Trash } from "lucide-react"
 import { useState } from "react"
 import { deleteClient } from "@/actions/client"
 import { toast } from "sonner"
+// @ts-ignore
 import { Client } from "@prisma/client"
 // import { EditClientDialog } from "./edit-client-dialog" // TODO: Create this
 

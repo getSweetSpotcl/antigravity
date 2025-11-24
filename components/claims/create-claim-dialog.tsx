@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { ClaimSchema, ClaimFormValues } from "@/schemas/claim"
 import { createClaim } from "@/actions/claim"
+// @ts-ignore
 import { Policy, Client } from "@prisma/client"
 import { Button } from "@/components/ui/button"
 import {

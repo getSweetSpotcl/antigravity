@@ -17,7 +17,7 @@ function validateRut(rut: string): boolean {
     }
 
     const dvEsperado = 11 - (suma % 11)
-    let dvCalculado = dvEsperado === 11 ? "0" : dvEsperado === 10 ? "k" : dvEsperado.toString()
+    const dvCalculado = dvEsperado === 11 ? "0" : dvEsperado === 10 ? "k" : dvEsperado.toString()
 
     return dvCalculado.toLowerCase() === dv.toLowerCase()
 }

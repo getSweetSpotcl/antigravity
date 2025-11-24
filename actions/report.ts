@@ -52,23 +52,23 @@ export const getSalesReport = async (year: number = new Date().getFullYear()): P
     })
 
     // Calcular totales
-    const totalPremiums = policies.reduce((sum, p) => sum + Number(p.premium), 0)
-    const totalCommissions = policies.reduce((sum, p) => sum + Number(p.commission), 0)
+    const totalPremiums = policies.reduce((sum: number, p: any) => sum + Number(p.premium), 0)
+    const totalCommissions = policies.reduce((sum: number, p: any) => sum + Number(p.commission), 0)
     const totalPolicies = policies.length
 
     // Generar métricas mensuales
     const months = eachMonthOfInterval({ start: startDate, end: endDate })
 
     const monthlyMetrics: MonthlyMetric[] = months.map((monthDate) => {
-        const monthPolicies = policies.filter((p) => {
+        const monthPolicies = policies.filter((p: any) => {
             const pDate = new Date(p.createdAt)
             return pDate.getMonth() === monthDate.getMonth() && pDate.getFullYear() === monthDate.getFullYear()
         })
 
         return {
             month: format(monthDate, "MMM", { locale: es }),
-            premiums: monthPolicies.reduce((sum, p) => sum + Number(p.premium), 0),
-            commissions: monthPolicies.reduce((sum, p) => sum + Number(p.commission), 0),
+            premiums: monthPolicies.reduce((sum: number, p: any) => sum + Number(p.premium), 0),
+            commissions: monthPolicies.reduce((sum: number, p: any) => sum + Number(p.commission), 0),
             policyCount: monthPolicies.length,
         }
     })

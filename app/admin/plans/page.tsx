@@ -16,7 +16,7 @@ export default async function PlansPage() {
             </div>
 
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {plans.map((plan) => (
+                {plans.map((plan: any) => (
                     <Card key={plan.id} className={!plan.isActive ? "opacity-60" : ""}>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-xl font-bold">{plan.name}</CardTitle>

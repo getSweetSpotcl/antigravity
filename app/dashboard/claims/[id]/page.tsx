@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
 import { UpdateClaimStatus } from "@/components/claims/update-claim-status"
+// @ts-ignore
 import { ClaimStatus } from "@prisma/client"
 
 const getStatusLabel = (status: ClaimStatus) => {

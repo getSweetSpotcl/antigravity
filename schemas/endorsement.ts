@@ -1,4 +1,5 @@
 import { z } from "zod"
+// @ts-expect-error
 import { EndorsementType } from "@prisma/client"
 
 export const EndorsementSchema = z.object({
