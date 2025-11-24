@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-// @ts-expect-error
 import { Policy, Client, InsuranceCompany } from "@prisma/client"
 import { format, addYears } from "date-fns"
 import { es } from "date-fns/locale"

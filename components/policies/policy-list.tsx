@@ -6,7 +6,6 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-// @ts-expect-error
 import { Policy, Client } from "@prisma/client"
 import { Card, CardContent } from "@/components/ui/card"
 import { format } from "date-fns"

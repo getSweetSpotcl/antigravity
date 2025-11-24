@@ -19,7 +19,6 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 import { Form } from "@/components/ui/form"
-// @ts-expect-error
 import { Client, InsuranceCompany } from "@prisma/client"
 import { Progress } from "@/components/ui/progress"
 

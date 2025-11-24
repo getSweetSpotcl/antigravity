@@ -1,4 +1,3 @@
-// @ts-expect-error
 import { Policy, Client, InsuranceCompany, Endorsement } from "@prisma/client"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"

@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button"
 import { FileDown, Loader2 } from "lucide-react"
 import { pdf } from "@react-pdf/renderer"
 import { QuoteDocument } from "./quote-document"
-// @ts-expect-error
 import { Quote, Client, InsuranceCompany, Tenant } from "@prisma/client"
 import { toast } from "sonner"
 

@@ -1,5 +1,4 @@
 import { z } from "zod"
-// @ts-expect-error
 import { ClaimStatus } from "@prisma/client"
 
 export const ClaimSchema = z.object({
