@@ -5,6 +5,7 @@ import { useState, useTransition } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useSearchParams } from "next/navigation"
+import { Mail, Lock, ArrowRight, AlertCircle, CheckCircle2 } from "lucide-react"
 
 import { LoginSchema } from "@/schemas"
 import { Input } from "@/components/ui/input"
@@ -16,10 +17,10 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form"
-import { CardWrapper } from "@/components/auth/card-wrapper"
 import { Button } from "@/components/ui/button"
 import { login } from "@/actions/login"
 import { toast } from "sonner"
+import Link from "next/link"
 
 export const LoginForm = () => {
     const searchParams = useSearchParams()
@@ -60,11 +61,17 @@ export const LoginForm = () => {
     }
 
     return (
-        <CardWrapper
-            headerLabel="Bienvenido de nuevo"
-            backButtonLabel="¿No tienes una cuenta?"
-            backButtonHref="/auth/register"
-        >
+        <div className="w-full">
+            {/* Header */}
+            <div className="mb-8">
+                <h2 className="text-3xl font-bold text-slate-900 mb-2">
+                    Bienvenido de nuevo
+                </h2>
+                <p className="text-slate-600">
+                    Ingresa tus credenciales para acceder a tu cuenta
+                </p>
+            </div>
+
             <Form {...form}>
                 <form
                     onSubmit={form.handleSubmit(onSubmit)}
@@ -76,14 +83,18 @@ export const LoginForm = () => {
                             name="email"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Email</FormLabel>
+                                    <FormLabel className="text-slate-700 font-medium">Email</FormLabel>
                                     <FormControl>
-                                        <Input
-                                            {...field}
-                                            disabled={isPending}
-                                            placeholder="juan.perez@ejemplo.com"
-                                            type="email"
-                                        />
+                                        <div className="relative">
+                                            <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
+                                            <Input
+                                                {...field}
+                                                disabled={isPending}
+                                                placeholder="tu@email.com"
+                                                type="email"
+                                                className="pl-11 h-12 bg-white border-slate-200 focus:border-blue-500 focus:ring-blue-500 transition-all"
+                                            />
+                                        </div>
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -94,45 +105,81 @@ export const LoginForm = () => {
                             name="password"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Contraseña</FormLabel>
+                                    <div className="flex items-center justify-between">
+                                        <FormLabel className="text-slate-700 font-medium">Contraseña</FormLabel>
+                                        <Link
+                                            href="/auth/forgot-password"
+                                            className="text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors"
+                                        >
+                                            ¿Olvidaste tu contraseña?
+                                        </Link>
+                                    </div>
                                     <FormControl>
-                                        <Input
-                                            {...field}
-                                            disabled={isPending}
-                                            placeholder="******"
-                                            type="password"
-                                        />
+                                        <div className="relative">
+                                            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
+                                            <Input
+                                                {...field}
+                                                disabled={isPending}
+                                                placeholder="••••••••"
+                                                type="password"
+                                                className="pl-11 h-12 bg-white border-slate-200 focus:border-blue-500 focus:ring-blue-500 transition-all"
+                                            />
+                                        </div>
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
                     </div>
+
+                    {/* Error Message */}
                     {error && (
-                        <div className="bg-destructive/15 p-3 rounded-md flex items-center gap-x-2 text-sm text-destructive">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                            </svg>
-                            <p>{error}</p>
+                        <div className="bg-red-50 border border-red-200 p-4 rounded-lg flex items-start gap-3 animate-in slide-in-from-top-2">
+                            <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                            <p className="text-sm text-red-800 font-medium">{error}</p>
                         </div>
                     )}
+
+                    {/* Success Message */}
                     {success && (
-                        <div className="bg-emerald-500/15 p-3 rounded-md flex items-center gap-x-2 text-sm text-emerald-500">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                            </svg>
-                            <p>{success}</p>
+                        <div className="bg-emerald-50 border border-emerald-200 p-4 rounded-lg flex items-start gap-3 animate-in slide-in-from-top-2">
+                            <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
+                            <p className="text-sm text-emerald-800 font-medium">{success}</p>
                         </div>
                     )}
+
                     <Button
                         disabled={isPending}
                         type="submit"
-                        className="w-full"
+                        className="w-full h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 transition-all duration-200 group"
                     >
-                        Ingresar
+                        {isPending ? (
+                            <div className="flex items-center gap-2">
+                                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                <span>Ingresando...</span>
+                            </div>
+                        ) : (
+                            <div className="flex items-center gap-2">
+                                <span>Ingresar</span>
+                                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                            </div>
+                        )}
                     </Button>
                 </form>
             </Form>
-        </CardWrapper>
+
+            {/* Footer */}
+            <div className="mt-8 text-center">
+                <p className="text-sm text-slate-600">
+                    ¿No tienes una cuenta?{" "}
+                    <Link
+                        href="/auth/register"
+                        className="text-blue-600 hover:text-blue-700 font-semibold hover:underline transition-colors"
+                    >
+                        Regístrate aquí
+                    </Link>
+                </p>
+            </div>
+        </div>
     )
 }
