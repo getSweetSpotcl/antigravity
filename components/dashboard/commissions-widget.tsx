@@ -94,7 +94,7 @@ export function CommissionsWidget({ summary, agentSummary }: CommissionsWidgetPr
                         </p>
                     </div>
                 </h3>
-                <Link href="/dashboard/commissions" className="text-sm text-slate-500 hover:text-slate-800 flex items-center gap-1">
+                <Link href="/dashboard/commissions" className="text-sm text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 flex items-center gap-1">
                     Ver todas
                     <ArrowRight className="h-4 w-4" />
                 </Link>
@@ -102,32 +102,32 @@ export function CommissionsWidget({ summary, agentSummary }: CommissionsWidgetPr
             <div className="p-6 space-y-4">
                 {/* Summary boxes */}
                 <div className="grid grid-cols-2 gap-3">
-                    <div className="rounded-xl bg-gradient-to-br from-amber-50 to-amber-100/50 p-4 border border-amber-200/50">
+                    <div className="rounded-xl bg-gradient-to-br from-amber-50 to-amber-100/50 dark:from-amber-900/30 dark:to-amber-800/20 p-4 border border-amber-200/50 dark:border-amber-700/30">
                         <div className="flex items-center gap-2 mb-2">
-                            <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-amber-100 text-amber-600">
+                            <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-amber-100 dark:bg-amber-900/50 text-amber-600 dark:text-amber-400">
                                 <Clock className="h-4 w-4" />
                             </div>
-                            <span className="text-xs font-semibold text-amber-800 uppercase tracking-wide">Pendientes</span>
+                            <span className="text-xs font-semibold text-amber-800 dark:text-amber-200 uppercase tracking-wide">Pendientes</span>
                         </div>
-                        <p className="text-2xl font-bold text-amber-700 tabular-nums">
+                        <p className="text-2xl font-bold text-amber-700 dark:text-amber-300 tabular-nums">
                             {pending.amount.toLocaleString("es-CL", { minimumFractionDigits: 0 })}
                             <span className="text-sm font-semibold ml-1">UF</span>
                         </p>
-                        <p className="text-xs text-amber-600 mt-1">{pending.count} comisiones</p>
+                        <p className="text-xs text-amber-600 dark:text-amber-400 mt-1">{pending.count} comisiones</p>
                     </div>
 
-                    <div className="rounded-xl bg-gradient-to-br from-red-50 to-red-100/50 p-4 border border-red-200/50">
+                    <div className="rounded-xl bg-gradient-to-br from-red-50 to-red-100/50 dark:from-red-900/30 dark:to-red-800/20 p-4 border border-red-200/50 dark:border-red-700/30">
                         <div className="flex items-center gap-2 mb-2">
-                            <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-red-100 text-red-600">
+                            <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-400">
                                 <AlertTriangle className="h-4 w-4" />
                             </div>
-                            <span className="text-xs font-semibold text-red-800 uppercase tracking-wide">Vencidas</span>
+                            <span className="text-xs font-semibold text-red-800 dark:text-red-200 uppercase tracking-wide">Vencidas</span>
                         </div>
-                        <p className="text-2xl font-bold text-red-700 tabular-nums">
+                        <p className="text-2xl font-bold text-red-700 dark:text-red-300 tabular-nums">
                             {overdue.amount.toLocaleString("es-CL", { minimumFractionDigits: 0 })}
                             <span className="text-sm font-semibold ml-1">UF</span>
                         </p>
-                        <p className="text-xs text-red-600 mt-1">{overdue.count} comisiones</p>
+                        <p className="text-xs text-red-600 dark:text-red-400 mt-1">{overdue.count} comisiones</p>
                     </div>
                 </div>
 
@@ -150,7 +150,7 @@ export function CommissionsWidget({ summary, agentSummary }: CommissionsWidgetPr
                                         className="block group"
                                     >
                                         <div
-                                            className="flex items-center justify-between rounded-xl border border-slate-200/80 p-3 hover:bg-slate-50/80 hover:border-slate-300/80 transition-all"
+                                            className="flex items-center justify-between rounded-xl border border-slate-200/80 dark:border-slate-700 p-3 hover:bg-slate-50/80 dark:hover:bg-slate-700/50 hover:border-slate-300/80 dark:hover:border-slate-600 transition-all"
                                             style={{ animationDelay: `${index * 50}ms` }}
                                         >
                                             <div className="min-w-0 flex-1">
@@ -168,7 +168,7 @@ export function CommissionsWidget({ summary, agentSummary }: CommissionsWidgetPr
                                             </div>
                                             <div className="flex items-center gap-3 flex-shrink-0 ml-4">
                                                 <div className="text-right">
-                                                    <p className="font-bold text-sm tabular-nums text-emerald-700">
+                                                    <p className="font-bold text-sm tabular-nums text-emerald-700 dark:text-emerald-400">
                                                         {Number(commission.pendingAmount).toLocaleString("es-CL", {
                                                             minimumFractionDigits: 2,
                                                         })}{" "}
@@ -213,22 +213,22 @@ export function CommissionsWidget({ summary, agentSummary }: CommissionsWidgetPr
 
                 {/* Agent Commissions Section */}
                 {agentSummary && (agentSummary.pending.count > 0 || agentSummary.overdue.count > 0) && (
-                    <div className="mt-4 pt-4 border-t border-slate-200">
+                    <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
                         <Link
                             href="/dashboard/commissions/agents"
-                            className="flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-sky-50 to-indigo-50 border border-sky-200/50 hover:border-sky-300/50 transition-all group"
+                            className="flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-sky-50 to-indigo-50 dark:from-sky-900/30 dark:to-indigo-900/20 border border-sky-200/50 dark:border-sky-700/30 hover:border-sky-300/50 dark:hover:border-sky-600/50 transition-all group"
                         >
                             <div className="flex items-center gap-3">
-                                <div className="w-9 h-9 rounded-lg bg-sky-100 flex items-center justify-center">
-                                    <Users className="h-5 w-5 text-sky-600" />
+                                <div className="w-9 h-9 rounded-lg bg-sky-100 dark:bg-sky-900/50 flex items-center justify-center">
+                                    <Users className="h-5 w-5 text-sky-600 dark:text-sky-400" />
                                 </div>
                                 <div>
-                                    <p className="text-sm font-semibold text-sky-800">Pagos a Vendedores</p>
-                                    <p className="text-xs text-sky-600">{agentSummary.pending.count + agentSummary.overdue.count} comisiones pendientes</p>
+                                    <p className="text-sm font-semibold text-sky-800 dark:text-sky-200">Pagos a Vendedores</p>
+                                    <p className="text-xs text-sky-600 dark:text-sky-400">{agentSummary.pending.count + agentSummary.overdue.count} comisiones pendientes</p>
                                 </div>
                             </div>
                             <div className="flex items-center gap-2">
-                                <span className="text-sm font-bold text-sky-700">
+                                <span className="text-sm font-bold text-sky-700 dark:text-sky-300">
                                     {(agentSummary.pending.amount + agentSummary.overdue.amount).toLocaleString("es-CL", { minimumFractionDigits: 0 })} UF
                                 </span>
                                 <ChevronRight className="h-4 w-4 text-sky-400 group-hover:text-sky-600 transition-colors" />

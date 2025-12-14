@@ -69,17 +69,17 @@ export function RenewalAlerts({ alerts }: RenewalAlertsProps) {
                         )}
                     </div>
                 </h3>
-                <Link href="/dashboard/renewals" className="text-sm text-slate-500 hover:text-slate-800 flex items-center gap-1">
+                <Link href="/dashboard/renewals" className="text-sm text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 flex items-center gap-1">
                     Ver todas
                     <ArrowRight className="h-4 w-4" />
                 </Link>
             </div>
-            <div className="divide-y divide-slate-100">
+            <div className="divide-y divide-slate-100 dark:divide-slate-700">
                 {alerts.map((alert, index) => (
                     <Link
                         key={alert.id}
                         href={`/dashboard/policies/${alert.id}`}
-                        className="flex items-center justify-between p-4 hover:bg-slate-50 transition-colors group"
+                        className="flex items-center justify-between p-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group"
                     >
                         <div className="flex items-center gap-3 min-w-0">
                             <div className={`
@@ -88,8 +88,8 @@ export function RenewalAlerts({ alerts }: RenewalAlertsProps) {
                                   alert.daysRemaining <= 15 ? "bg-amber-500" : "bg-sky-500"}
                             `} />
                             <div className="min-w-0">
-                                <p className="font-medium text-sm text-slate-700 truncate">{alert.number}</p>
-                                <p className="text-xs text-slate-500 truncate">
+                                <p className="font-medium text-sm text-slate-700 dark:text-slate-200 truncate">{alert.number}</p>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
                                     {alert.clientName}
                                 </p>
                             </div>
@@ -108,7 +108,7 @@ export function RenewalAlerts({ alerts }: RenewalAlertsProps) {
                                     {format(new Date(alert.endDate), "dd MMM", { locale: es })}
                                 </p>
                             </div>
-                            <ChevronRight className="h-4 w-4 text-slate-300 group-hover:text-slate-500 transition-colors" />
+                            <ChevronRight className="h-4 w-4 text-slate-300 dark:text-slate-600 group-hover:text-slate-500 dark:group-hover:text-slate-400 transition-colors" />
                         </div>
                     </Link>
                 ))}
