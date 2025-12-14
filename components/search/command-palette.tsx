@@ -251,11 +251,11 @@ export function CommandPalette() {
             {/* Trigger button */}
             <button
                 onClick={() => setOpen(true)}
-                className="flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-md border bg-background hover:bg-accent"
+                className="flex items-center gap-3 w-full max-w-md px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800"
             >
-                <Search className="h-4 w-4" />
-                <span className="hidden md:inline">Buscar...</span>
-                <kbd className="hidden md:inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
+                <Search className="h-4 w-4 flex-shrink-0" />
+                <span className="flex-1 text-left">Buscar clientes, pólizas, siniestros...</span>
+                <kbd className="hidden md:inline-flex h-5 select-none items-center gap-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-1.5 font-mono text-[10px] font-medium text-muted-foreground flex-shrink-0">
                     <Command className="h-3 w-3" />K
                 </kbd>
             </button>
