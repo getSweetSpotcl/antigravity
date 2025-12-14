@@ -3,7 +3,8 @@ import { PlanDialog } from "@/components/admin/plan-dialog"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Pencil, Trash2, Users, HardDrive } from "lucide-react"
+import { Pencil, Trash2, Users, HardDrive, ArrowLeft } from "lucide-react"
+import Link from "next/link"
 
 export default async function PlansPage() {
     const plans = await getPlans()
@@ -11,7 +12,14 @@ export default async function PlansPage() {
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
-                <h1 className="text-3xl font-bold tracking-tight">Planes de Suscripción</h1>
+                <div className="flex items-center gap-4">
+                    <Link href="/admin/tenants">
+                        <Button variant="ghost" size="icon">
+                            <ArrowLeft className="h-4 w-4" />
+                        </Button>
+                    </Link>
+                    <h1 className="text-3xl font-bold tracking-tight">Planes de Suscripción</h1>
+                </div>
                 <PlanDialog />
             </div>
 
@@ -45,7 +53,7 @@ export default async function PlansPage() {
 
                             <div className="flex items-center justify-between pt-4 border-t">
                                 <span className="text-xs text-muted-foreground">
-                                    {plan._count.tenants} organizaciones
+                                    {plan._count?.Tenant ?? 0} organizaciones
                                 </span>
                                 <div className="flex gap-2">
                                     <PlanDialog

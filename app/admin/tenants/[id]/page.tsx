@@ -56,7 +56,7 @@ export default async function TenantDetailPage({ params }: { params: Promise<{ i
                 </TabsContent>
 
                 <TabsContent value="users">
-                    <TenantUsers users={tenant.users || []} tenantId={id} />
+                    <TenantUsers users={tenant.User || []} tenantId={id} />
                 </TabsContent>
             </Tabs>
         </div>

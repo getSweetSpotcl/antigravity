@@ -11,11 +11,11 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
-import { createBillingRecord, markAsPaid } from "@/actions/admin-billing"
+import { createBillingRecord, markAsPaid, generateBillingForTenant } from "@/actions/admin-billing"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
-import { Plus, CheckCircle } from "lucide-react"
+import { Plus, CheckCircle, Zap, Loader2 } from "lucide-react"
 import {
     Dialog,
     DialogContent,
@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useRouter } from "next/navigation"
 
 interface BillingTableProps {
     records: any[]
@@ -32,9 +33,28 @@ interface BillingTableProps {
 }
 
 export function BillingTable({ records, tenantId }: BillingTableProps) {
+    const router = useRouter()
     const [open, setOpen] = useState(false)
     const [amount, setAmount] = useState("")
     const [description, setDescription] = useState("")
+    const [generating, setGenerating] = useState(false)
+
+    const handleGenerateAuto = async () => {
+        setGenerating(true)
+        try {
+            const result = await generateBillingForTenant(tenantId)
+            if (result.error) {
+                toast.error(result.error)
+            } else {
+                toast.success(result.success || "Cobro generado exitosamente")
+                router.refresh()
+            }
+        } catch (error) {
+            toast.error("Error al generar el cobro")
+        } finally {
+            setGenerating(false)
+        }
+    }
 
     const handleCreate = async () => {
         if (!amount) return
@@ -72,13 +92,27 @@ export function BillingTable({ records, tenantId }: BillingTableProps) {
         <div className="space-y-4">
             <div className="flex justify-between items-center">
                 <h3 className="text-lg font-medium">Historial de Pagos</h3>
-                <Dialog open={open} onOpenChange={setOpen}>
-                    <DialogTrigger asChild>
-                        <Button size="sm">
-                            <Plus className="mr-2 h-4 w-4" />
-                            Nuevo Cobro
-                        </Button>
-                    </DialogTrigger>
+                <div className="flex gap-2">
+                    <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={handleGenerateAuto}
+                        disabled={generating}
+                    >
+                        {generating ? (
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        ) : (
+                            <Zap className="mr-2 h-4 w-4" />
+                        )}
+                        Generar Cobro Mensual
+                    </Button>
+                    <Dialog open={open} onOpenChange={setOpen}>
+                        <DialogTrigger asChild>
+                            <Button size="sm">
+                                <Plus className="mr-2 h-4 w-4" />
+                                Cobro Manual
+                            </Button>
+                        </DialogTrigger>
                     <DialogContent>
                         <DialogHeader>
                             <DialogTitle>Generar Cobro Manual</DialogTitle>
@@ -103,7 +137,8 @@ export function BillingTable({ records, tenantId }: BillingTableProps) {
                             <Button onClick={handleCreate} className="w-full">Generar</Button>
                         </div>
                     </DialogContent>
-                </Dialog>
+                    </Dialog>
+                </div>
             </div>
 
             <div className="rounded-md border">

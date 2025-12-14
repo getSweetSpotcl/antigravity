@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth"
 import { redirect } from "next/navigation"
 import { getClaimById } from "@/actions/claim"
+import { serializeDecimal } from "@/lib/serialize"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
 import { Button } from "@/components/ui/button"
@@ -9,8 +10,8 @@ import { Badge } from "@/components/ui/badge"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
 import { UpdateClaimStatus } from "@/components/claims/update-claim-status"
-// @ts-ignore
-import { ClaimStatus } from "@prisma/client"
+import { AttachmentList } from "@/components/shared/attachment-list"
+import type { ClaimStatus } from "@prisma/client"
 
 const getStatusLabel = (status: ClaimStatus) => {
     const labels: Record<ClaimStatus, string> = {
@@ -34,14 +35,16 @@ const getStatusVariant = (status: ClaimStatus): "default" | "secondary" | "destr
     return variants[status] || "secondary"
 }
 
-export default async function ClaimDetailPage({ params }: { params: { id: string } }) {
+export default async function ClaimDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const session = await auth()
+    const { id } = await params
 
     if (!session?.user?.tenantId) {
         redirect("/auth/login")
     }
 
-    const claim = await getClaimById(params.id)
+    const claimRaw = await getClaimById(id)
+    const claim = serializeDecimal(claimRaw)
 
     return (
         <div className="flex-1 space-y-4 p-8 pt-6">
@@ -92,20 +95,20 @@ export default async function ClaimDetailPage({ params }: { params: { id: string
                                 href={`/dashboard/policies/${claim.policyId}`}
                                 className="text-lg text-blue-600 hover:underline"
                             >
-                                {claim.policy.number}
+                                {claim.Policy.number}
                             </Link>
                         </div>
                         <div>
                             <p className="text-sm font-medium text-muted-foreground">Cliente</p>
                             <p className="text-lg">
-                                {claim.policy.client.firstName} {claim.policy.client.lastName}
+                                {claim.Policy.Client.firstName} {claim.Policy.Client.lastName}
                             </p>
-                            <p className="text-sm text-muted-foreground">{claim.policy.client.rut}</p>
+                            <p className="text-sm text-muted-foreground">{claim.Policy.Client.rut}</p>
                         </div>
                         <div>
                             <p className="text-sm font-medium text-muted-foreground">Compañía Aseguradora</p>
                             <p className="text-lg">
-                                {claim.policy.insuranceCompany?.name || claim.policy.company}
+                                {claim.Policy.InsuranceCompany?.name || claim.Policy.company}
                             </p>
                         </div>
                     </CardContent>
@@ -154,6 +157,14 @@ export default async function ClaimDetailPage({ params }: { params: { id: string
                 </div>
 
                 <UpdateClaimStatus claimId={claim.id} currentStatus={claim.status} />
+            </div>
+
+            <div className="mt-6">
+                <AttachmentList
+                    entityId={claim.id}
+                    type="claim"
+                    attachments={claim.ClaimAttachment}
+                />
             </div>
         </div>
     )

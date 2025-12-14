@@ -10,7 +10,7 @@ import { format } from "date-fns"
 import { CalendarIcon, Plus } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-import { PolicySchema } from "@/schemas/policy"
+import { PolicySchema, PolicyTypes } from "@/schemas/policy"
 import { createPolicy } from "@/actions/policy"
 import { Button } from "@/components/ui/button"
 import {
@@ -42,8 +42,8 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover"
 import { Calendar } from "@/components/ui/calendar"
-// @ts-ignore
-import { Client, PolicyType } from "@prisma/client"
+import { AgentSelector } from "@/components/commissions/agent-selector"
+import type { Client } from "@prisma/client"
 
 interface CreatePolicyDialogProps {
     clients: Client[]
@@ -140,9 +140,9 @@ export const CreatePolicyDialog = ({ clients }: CreatePolicyDialogProps) => {
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
-                                                {Object.values(PolicyType).map((type) => (
-                                                    <SelectItem key={type as string} value={type as string}>
-                                                        {type as string}
+                                                {PolicyTypes.map((type) => (
+                                                    <SelectItem key={type} value={type}>
+                                                        {type}
                                                     </SelectItem>
                                                 ))}
                                             </SelectContent>
@@ -176,6 +176,24 @@ export const CreatePolicyDialog = ({ clients }: CreatePolicyDialogProps) => {
                                 )}
                             />
                         </div>
+
+                        <FormField
+                            control={form.control}
+                            name="agentId"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormControl>
+                                        <AgentSelector
+                                            value={field.value}
+                                            onValueChange={field.onChange}
+                                            label="Vendedor asignado (opcional)"
+                                            showCommission={true}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
 
                         <div className="grid grid-cols-2 gap-4">
                             <FormField

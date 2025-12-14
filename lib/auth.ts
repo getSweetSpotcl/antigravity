@@ -57,11 +57,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                         where: { email }
                     })
 
-                    console.log("DEBUG: Login attempt for:", email)
-                    console.log("DEBUG: User found:", !!user)
-
                     if (!user || !user.password) {
-                        console.log("DEBUG: User not found or no password")
                         return null
                     }
 
@@ -69,8 +65,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                         password,
                         user.password
                     )
-
-                    console.log("DEBUG: Password match:", passwordsMatch)
 
                     if (passwordsMatch) {
                         return {

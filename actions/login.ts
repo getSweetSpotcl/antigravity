@@ -1,11 +1,32 @@
 "use server"
 
 import * as z from "zod"
+import { headers } from "next/headers"
 import { signIn } from "@/lib/auth"
 import { LoginSchema } from "@/schemas"
 import { AuthError } from "next-auth"
+import {
+    checkRateLimit,
+    getClientIPFromHeaders,
+    rateLimitPresets,
+} from "@/lib/rate-limit"
 
 export const login = async (values: z.infer<typeof LoginSchema>) => {
+    // Rate limiting: 5 intentos por minuto
+    const headersList = await headers()
+    const clientIP = getClientIPFromHeaders(headersList)
+    const rateLimit = checkRateLimit(clientIP, {
+        ...rateLimitPresets.login,
+        identifier: "login",
+    })
+
+    if (!rateLimit.success) {
+        const retryAfter = Math.ceil((rateLimit.resetAt - Date.now()) / 1000)
+        return {
+            error: `Demasiados intentos de inicio de sesión. Por favor espera ${retryAfter} segundos.`,
+        }
+    }
+
     const validatedFields = LoginSchema.safeParse(values)
 
     if (!validatedFields.success) {
@@ -21,10 +42,8 @@ export const login = async (values: z.infer<typeof LoginSchema>) => {
             redirectTo: "/dashboard",
         })
     } catch (error) {
-        console.log("LOGIN ERROR:", error)
-
         // NextAuth throws NEXT_REDIRECT on successful login, so we need to check for it
-        if (error instanceof Error && error.message === "NEXT_REDIRECT") {
+        if (isRedirectError(error)) {
             // This is actually a successful redirect, let it through
             throw error
         }
@@ -43,4 +62,12 @@ export const login = async (values: z.infer<typeof LoginSchema>) => {
         // For any other error, return a generic message
         return { error: "Error al iniciar sesión. Por favor intenta nuevamente." }
     }
+}
+
+function isRedirectError(error: any) {
+    return (
+        error instanceof Error &&
+        (error.message === "NEXT_REDIRECT" ||
+            (error as any).digest?.startsWith("NEXT_REDIRECT"))
+    )
 }

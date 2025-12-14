@@ -1,3 +1,6 @@
+import { config } from 'dotenv'
+config() // Load .env file
+
 import { prisma } from '../lib/db'
 import bcrypt from 'bcryptjs'
 
@@ -6,7 +9,7 @@ async function main() {
 
     const existingUsers = await prisma.user.findMany({
         include: {
-            tenant: true
+            Tenant: true
         }
     })
 
@@ -16,7 +19,7 @@ async function main() {
         existingUsers.forEach((user: any) => {
             console.log(`\n📧 Email: ${user.email}`)
             console.log(`👤 Nombre: ${user.name}`)
-            console.log(`🏢 Corredora: ${user.tenant?.name || 'N/A'}`)
+            console.log(`🏢 Corredora: ${user.Tenant?.name || 'N/A'}`)
             console.log(`🔑 Rol: ${user.role}`)
         })
         return

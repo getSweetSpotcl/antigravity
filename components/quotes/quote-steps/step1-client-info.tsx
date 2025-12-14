@@ -23,6 +23,7 @@ import { Separator } from "@/components/ui/separator"
 import { RutInput } from "@/components/ui/rut-input"
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
+import { AgentSelector } from "@/components/commissions/agent-selector"
 
 interface Step1Props {
     form: UseFormReturn<any>
@@ -30,17 +31,47 @@ interface Step1Props {
 }
 
 export const Step1ClientInfo = ({ form, clients }: Step1Props) => {
-    const [isProspect, setIsProspect] = useState(false)
     const sameAsContractor = form.watch("sameAsContractor")
+    const watchedClientId = form.watch("clientId")
+    const watchedProspectName = form.watch("prospectName")
 
-    // Effect to clear/set fields when toggling client/prospect
+    // Initialize isProspect based on form values (for edit mode)
+    const [isProspect, setIsProspect] = useState(() => {
+        const currentClientId = form.getValues("clientId")
+        const currentProspectName = form.getValues("prospectName")
+        return !currentClientId && !!currentProspectName
+    })
+    const [isUserToggling, setIsUserToggling] = useState(false)
+
+    // Sync isProspect state when form values change externally (e.g., form reset)
     useEffect(() => {
-        if (!isProspect) {
+        if (!isUserToggling) {
+            const shouldBeProspect = !watchedClientId && !!watchedProspectName
+            if (shouldBeProspect !== isProspect) {
+                setIsProspect(shouldBeProspect)
+            }
+        }
+    }, [watchedClientId, watchedProspectName, isUserToggling])
+
+    // Handle user toggling between client and prospect
+    const handleToggleProspect = (newIsProspect: boolean) => {
+        setIsUserToggling(true)
+        setIsProspect(newIsProspect)
+
+        if (!newIsProspect) {
             form.setValue("prospectName", "")
         } else {
             form.setValue("clientId", "")
+            // Clear contractor fields when switching to prospect mode
+            form.setValue("contractorName", "")
+            form.setValue("contractorRut", "")
+            form.setValue("contractorEmail", "")
+            form.setValue("contractorPhone", "")
         }
-    }, [isProspect, form])
+
+        // Reset user toggling flag after a short delay
+        setTimeout(() => setIsUserToggling(false), 100)
+    }
 
     // Effect to auto-fill contractor info when selecting a client
     const handleClientSelect = (clientId: string) => {
@@ -49,10 +80,27 @@ export const Step1ClientInfo = ({ form, clients }: Step1Props) => {
         if (client) {
             form.setValue("contractorName", `${client.firstName} ${client.lastName}`)
             form.setValue("contractorRut", client.rut)
-            form.setValue("contractorEmail", client.email)
-            form.setValue("contractorPhone", client.phone)
+            form.setValue("contractorEmail", client.email || "")
+            form.setValue("contractorPhone", client.phone || "")
         }
     }
+
+    // Effect to populate contractor fields from client on initial load (for edit mode)
+    useEffect(() => {
+        const clientId = form.getValues("clientId")
+        const contractorName = form.getValues("contractorName")
+
+        // If there's a client selected but contractor name is empty, populate from client
+        if (clientId && !contractorName) {
+            const client = clients.find(c => c.id === clientId)
+            if (client) {
+                form.setValue("contractorName", `${client.firstName} ${client.lastName}`)
+                form.setValue("contractorRut", client.rut)
+                form.setValue("contractorEmail", client.email || "")
+                form.setValue("contractorPhone", client.phone || "")
+            }
+        }
+    }, [clients]) // Run when clients are loaded
 
     return (
         <div className="space-y-6">
@@ -61,7 +109,7 @@ export const Step1ClientInfo = ({ form, clients }: Step1Props) => {
                 <Button
                     type="button"
                     variant={!isProspect ? "default" : "ghost"}
-                    onClick={() => setIsProspect(false)}
+                    onClick={() => handleToggleProspect(false)}
                     className="flex-1 rounded-md"
                 >
                     Cliente Existente
@@ -69,7 +117,7 @@ export const Step1ClientInfo = ({ form, clients }: Step1Props) => {
                 <Button
                     type="button"
                     variant={isProspect ? "default" : "ghost"}
-                    onClick={() => setIsProspect(true)}
+                    onClick={() => handleToggleProspect(true)}
                     className="flex-1 rounded-md"
                 >
                     Nuevo Prospecto
@@ -266,7 +314,7 @@ export const Step1ClientInfo = ({ form, clients }: Step1Props) => {
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Tipo</FormLabel>
-                                <Select onValueChange={field.onChange} value={field.value}>
+                                <Select onValueChange={field.onChange} value={field.value || ""}>
                                     <FormControl>
                                         <SelectTrigger>
                                             <SelectValue placeholder="Seleccione tipo" />
@@ -309,6 +357,34 @@ export const Step1ClientInfo = ({ form, clients }: Step1Props) => {
                         )}
                     />
                 </div>
+            </div>
+
+            <Separator className="my-4" />
+
+            {/* Vendedor Asignado (Opcional) */}
+            <div className="space-y-4">
+                <h3 className="text-lg font-medium">Asignación de Vendedor (Opcional)</h3>
+                <FormField
+                    control={form.control}
+                    name="agentId"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormControl>
+                                <AgentSelector
+                                    value={field.value}
+                                    onValueChange={field.onChange}
+                                    label=""
+                                    placeholder="Seleccionar vendedor (opcional)"
+                                    showCommission={true}
+                                />
+                            </FormControl>
+                            <FormDescription>
+                                Si asignas un vendedor, se generarán automáticamente sus comisiones al crear la póliza.
+                            </FormDescription>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
             </div>
         </div>
     )

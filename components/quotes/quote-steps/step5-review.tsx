@@ -15,13 +15,16 @@ import { Textarea } from "@/components/ui/textarea"
 import { Separator } from "@/components/ui/separator"
 import { Card, CardContent } from "@/components/ui/card"
 import { INSURANCE_LINES, POLICY_TYPES_ES } from "@/lib/insurance-constants"
+import { QuoteAttachments } from "../quote-attachments"
 
 interface Step5Props {
     form: UseFormReturn<any>
     companies: InsuranceCompany[]
+    attachedFiles: File[]
+    onFilesChange: (files: File[]) => void
 }
 
-export const Step5Review = ({ form, companies }: Step5Props) => {
+export const Step5Review = ({ form, companies, attachedFiles, onFilesChange }: Step5Props) => {
     const values = form.getValues()
     const company = companies.find(c => c.id === values.companyId)
     const insuranceLineLabel = INSURANCE_LINES[values.insuranceLine as keyof typeof INSURANCE_LINES]?.label
@@ -91,7 +94,14 @@ export const Step5Review = ({ form, companies }: Step5Props) => {
                     <div className="space-y-2">
                         {values.coverages?.map((cov: any, index: number) => (
                             <div key={index} className="flex justify-between text-sm border-b border-slate-100 pb-2 last:border-0">
-                                <span>{cov.name}</span>
+                                <span>
+                                    {cov.name}
+                                    {cov.cadNumber && (
+                                        <span className="ml-2 text-xs font-normal text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">
+                                            CAD: {cov.cadNumber}
+                                        </span>
+                                    )}
+                                </span>
                                 <div className="flex gap-4">
                                     <span className="text-muted-foreground">Monto: {cov.insuredAmount} {values.currency}</span>
                                     <span className="font-medium">{cov.premium} {values.currency}</span>
@@ -102,28 +112,27 @@ export const Step5Review = ({ form, companies }: Step5Props) => {
 
                     <Separator />
 
-                    <div className="flex justify-between items-center pt-2">
-                        <span className="font-semibold">Prima Total Neta</span>
-                        <span className="text-xl font-bold text-blue-600">
-                            {values.totalPremium} {values.currency}
-                        </span>
+                    <div className="flex justify-between items-center bg-blue-50 p-4 rounded-lg">
+                        <span className="font-semibold text-lg">Prima Total Neta:</span>
+                        <span className="font-bold text-2xl text-blue-700">{values.totalPremium} {values.currency}</span>
                     </div>
                 </CardContent>
             </Card>
 
-            <Separator className="my-4" />
+            {/* Archivos Adjuntos */}
+            <QuoteAttachments files={attachedFiles} onFilesChange={onFilesChange} />
 
-            {/* Notas Adicionales */}
+            {/* Notas */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <FormField
                     control={form.control}
                     name="notes"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Notas para el Cliente (Opcional)</FormLabel>
+                            <FormLabel>Notas para el Cliente</FormLabel>
                             <FormControl>
                                 <Textarea
-                                    placeholder="Observaciones que aparecerán en la cotización..."
+                                    placeholder="Observaciones, condiciones especiales, etc..."
                                     className="h-32"
                                     {...field}
                                 />

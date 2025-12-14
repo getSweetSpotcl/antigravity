@@ -20,9 +20,9 @@ export const getAllTenants = async () => {
 
     const tenants = await prisma.tenant.findMany({
         include: {
-            assignedPlan: true,
+            Plan: true,
             _count: {
-                select: { users: true, policies: true }
+                select: { User: true, Policy: true }
             }
         },
         orderBy: { createdAt: "desc" }
@@ -37,10 +37,10 @@ export const getTenantById = async (id: string) => {
     const tenant = await prisma.tenant.findUnique({
         where: { id },
         include: {
-            users: true,
-            assignedPlan: true,
+            User: true,
+            Plan: true,
             _count: {
-                select: { policies: true, clients: true }
+                select: { Policy: true, Client: true }
             }
         }
     })
@@ -88,7 +88,11 @@ export const updateTenant = async (id: string, data: any) => {
             updateData.nextBillingDate = nextDate
         }
 
-        if (data.planId) {
+        // Manejar planId - "custom" significa sin plan predefinido
+        if (data.planId === "custom") {
+            updateData.planId = null
+            updateData.plan = "Custom"
+        } else if (data.planId) {
             updateData.planId = data.planId
             // Actualizar también el campo legacy 'plan' con el nombre del plan si está disponible
             if (data.planName) {
@@ -98,9 +102,18 @@ export const updateTenant = async (id: string, data: any) => {
             updateData.plan = data.plan
         }
 
-        await prisma.tenant.update({
+        console.log("Updating tenant with data:", JSON.stringify(updateData, null, 2))
+
+        const updated = await prisma.tenant.update({
             where: { id },
             data: updateData
+        })
+
+        console.log("Tenant updated successfully:", {
+            planId: updated.planId,
+            discountType: updated.discountType,
+            discountValue: updated.discountValue,
+            customPrice: updated.customPrice
         })
 
         revalidatePath("/admin/tenants")
@@ -142,4 +155,139 @@ export const clearAdminContext = async () => {
     cookieStore.delete(ADMIN_TENANT_COOKIE)
     revalidatePath("/")
     return { success: "Contexto restaurado a tenant principal" }
+}
+
+// ==================== Platform Users (Super Admins) ====================
+
+export const getPlatformUsers = async () => {
+    await checkSuperAdmin()
+
+    const users = await prisma.user.findMany({
+        where: {
+            role: "SUPER_ADMIN"
+        },
+        select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+            createdAt: true,
+            Tenant: {
+                select: {
+                    id: true,
+                    name: true
+                }
+            }
+        },
+        orderBy: { createdAt: "desc" }
+    })
+
+    return users
+}
+
+export const createPlatformUser = async (data: {
+    name: string
+    email: string
+    password: string
+    tenantId?: string
+}) => {
+    await checkSuperAdmin()
+
+    try {
+        // Check if email already exists
+        const existingUser = await prisma.user.findUnique({
+            where: { email: data.email }
+        })
+
+        if (existingUser) {
+            return { error: "Ya existe un usuario con este email" }
+        }
+
+        // Hash password
+        const bcrypt = await import("bcryptjs")
+        const hashedPassword = await bcrypt.hash(data.password, 10)
+
+        const user = await prisma.user.create({
+            data: {
+                name: data.name,
+                email: data.email,
+                password: hashedPassword,
+                role: "SUPER_ADMIN",
+                tenantId: data.tenantId || null
+            }
+        })
+
+        revalidatePath("/admin/users")
+        return { success: "Usuario de plataforma creado", user }
+    } catch (error) {
+        console.error("Error creating platform user:", error)
+        return { error: "Error al crear el usuario" }
+    }
+}
+
+export const updatePlatformUser = async (id: string, data: {
+    name?: string
+    email?: string
+    password?: string
+    tenantId?: string | null
+}) => {
+    await checkSuperAdmin()
+
+    try {
+        const updateData: any = {}
+
+        if (data.name) updateData.name = data.name
+        if (data.email) {
+            // Check if email is taken by another user
+            const existingUser = await prisma.user.findFirst({
+                where: {
+                    email: data.email,
+                    NOT: { id }
+                }
+            })
+            if (existingUser) {
+                return { error: "Ya existe un usuario con este email" }
+            }
+            updateData.email = data.email
+        }
+        if (data.password) {
+            const bcrypt = await import("bcryptjs")
+            updateData.password = await bcrypt.hash(data.password, 10)
+        }
+        if (data.tenantId !== undefined) {
+            updateData.tenantId = data.tenantId || null
+        }
+
+        await prisma.user.update({
+            where: { id },
+            data: updateData
+        })
+
+        revalidatePath("/admin/users")
+        return { success: "Usuario actualizado" }
+    } catch (error) {
+        console.error("Error updating platform user:", error)
+        return { error: "Error al actualizar el usuario" }
+    }
+}
+
+export const deletePlatformUser = async (id: string) => {
+    const session = await checkSuperAdmin()
+
+    // Prevent self-deletion
+    if (session.user.id === id) {
+        return { error: "No puedes eliminar tu propia cuenta" }
+    }
+
+    try {
+        await prisma.user.delete({
+            where: { id }
+        })
+
+        revalidatePath("/admin/users")
+        return { success: "Usuario eliminado" }
+    } catch (error) {
+        console.error("Error deleting platform user:", error)
+        return { error: "Error al eliminar el usuario" }
+    }
 }

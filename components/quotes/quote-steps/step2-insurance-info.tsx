@@ -3,6 +3,7 @@
 import { UseFormReturn } from "react-hook-form"
 import { InsuranceCompany } from "@prisma/client"
 import { format } from "date-fns"
+import { es } from "date-fns/locale"
 import { CalendarIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 import {
@@ -100,7 +101,7 @@ export const Step2InsuranceInfo = ({ form, companies }: Step2Props) => {
                                         form.setValue("policyType", line.category)
                                     }
                                 }}
-                                value={field.value}
+                                value={field.value || ""}
                             >
                                 <FormControl>
                                     <SelectTrigger>
@@ -130,7 +131,7 @@ export const Step2InsuranceInfo = ({ form, companies }: Step2Props) => {
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>Categoría de Póliza</FormLabel>
-                            <Select onValueChange={field.onChange} value={field.value} disabled>
+                            <Select onValueChange={field.onChange} value={field.value || ""} disabled>
                                 <FormControl>
                                     <SelectTrigger>
                                         <SelectValue placeholder="Categoría automática" />
@@ -157,7 +158,12 @@ export const Step2InsuranceInfo = ({ form, companies }: Step2Props) => {
                         <FormItem>
                             <FormLabel>Duración (Meses)</FormLabel>
                             <FormControl>
-                                <Input type="number" {...field} />
+                                <Input
+                                    type="number"
+                                    {...field}
+                                    className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                    onWheel={(e) => e.currentTarget.blur()}
+                                />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -184,7 +190,7 @@ export const Step2InsuranceInfo = ({ form, companies }: Step2Props) => {
                                             )}
                                         >
                                             {field.value ? (
-                                                format(field.value, "PPP")
+                                                format(field.value, "PPP", { locale: es })
                                             ) : (
                                                 <span>Seleccione fecha</span>
                                             )}
@@ -197,6 +203,7 @@ export const Step2InsuranceInfo = ({ form, companies }: Step2Props) => {
                                         mode="single"
                                         selected={field.value}
                                         onSelect={field.onChange}
+                                        locale={es}
                                         initialFocus
                                     />
                                 </PopoverContent>
@@ -224,7 +231,7 @@ export const Step2InsuranceInfo = ({ form, companies }: Step2Props) => {
                                             )}
                                         >
                                             {field.value ? (
-                                                format(field.value, "PPP")
+                                                format(field.value, "PPP", { locale: es })
                                             ) : (
                                                 <span>Seleccione fecha</span>
                                             )}
@@ -237,6 +244,7 @@ export const Step2InsuranceInfo = ({ form, companies }: Step2Props) => {
                                         mode="single"
                                         selected={field.value}
                                         onSelect={field.onChange}
+                                        locale={es}
                                         disabled={(date) =>
                                             date < new Date()
                                         }

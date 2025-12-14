@@ -10,19 +10,23 @@ import { toast } from "sonner"
 
 interface DownloadQuoteButtonProps {
     quote: Quote & {
-        client: Client | null
-        company: InsuranceCompany | null
-        tenant: Tenant
+        Client: Client | null
+        InsuranceCompany: InsuranceCompany | null
+        Tenant: Tenant
+    }
+    agent?: {
+        name: string | null
+        email: string | null
     }
 }
 
-export function DownloadQuoteButton({ quote }: DownloadQuoteButtonProps) {
+export function DownloadQuoteButton({ quote, agent }: DownloadQuoteButtonProps) {
     const [isGenerating, setIsGenerating] = useState(false)
 
     const handleDownload = async () => {
         setIsGenerating(true)
         try {
-            const blob = await pdf(<QuoteDocument quote={quote} />).toBlob()
+            const blob = await pdf(<QuoteDocument quote={quote} agent={agent} />).toBlob()
             const url = URL.createObjectURL(blob)
             const link = document.createElement("a")
             link.href = url

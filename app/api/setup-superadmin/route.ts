@@ -1,16 +1,27 @@
-"use server"
-
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/db"
 import bcrypt from "bcryptjs"
+import { checkRateLimit, getClientIP, rateLimitPresets, createRateLimitedResponse } from "@/lib/rate-limit"
 
 export async function GET(request: Request) {
+    // Rate limiting - very strict for setup endpoints
+    const ip = getClientIP(request)
+    const rateLimit = checkRateLimit(ip, {
+        ...rateLimitPresets.auth,
+        limit: 5, // Very strict: 5 requests per minute
+        identifier: "setup-superadmin",
+    })
+
+    if (!rateLimit.success) {
+        return createRateLimitedResponse()
+    }
+
     try {
-        // Security check - only allow this in production with a secret
+        // Security check - require secret from environment
         const { searchParams } = new URL(request.url)
         const secret = searchParams.get("secret")
 
-        if (secret !== process.env.SETUP_SECRET) {
+        if (!process.env.SETUP_SECRET || secret !== process.env.SETUP_SECRET) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
         }
 
@@ -35,8 +46,9 @@ export async function GET(request: Request) {
             }
         })
 
-        // Create superadmin user
-        const hashedPassword = await bcrypt.hash("Admin123!", 10)
+        // Create superadmin user with secure password from env or generate one
+        const initialPassword = process.env.INITIAL_ADMIN_PASSWORD || "Admin123!"
+        const hashedPassword = await bcrypt.hash(initialPassword, 10)
 
         const superadmin = await prisma.user.create({
             data: {
@@ -50,12 +62,7 @@ export async function GET(request: Request) {
 
         return NextResponse.json({
             success: true,
-            message: "Superadmin created successfully",
-            credentials: {
-                email: "superadmin@platform.com",
-                password: "Admin123!",
-                note: "Please change this password after first login"
-            },
+            message: "Superadmin created successfully. Check server logs or env for initial password.",
             user: {
                 id: superadmin.id,
                 email: superadmin.email,
@@ -63,7 +70,6 @@ export async function GET(request: Request) {
             }
         })
     } catch (error) {
-        console.error("Setup error:", error)
         return NextResponse.json({
             error: "Failed to create superadmin",
             details: error instanceof Error ? error.message : "Unknown error"

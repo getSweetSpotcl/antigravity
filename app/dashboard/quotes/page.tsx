@@ -4,6 +4,7 @@ import { getQuotes, getInsuranceCompanies } from "@/actions/quote"
 import { getClients } from "@/actions/client"
 import { QuoteList } from "@/components/quotes/quote-list"
 import { CreateQuoteDialogWrapper } from "@/components/quotes/create-quote-dialog-wrapper"
+import { serializeList } from "@/lib/serialize"
 
 export default async function QuotesPage() {
     const session = await auth()
@@ -12,9 +13,11 @@ export default async function QuotesPage() {
         redirect("/auth/login")
     }
 
-    const quotes = await getQuotes()
+    const quotesRaw = await getQuotes()
     const clients = await getClients()
     const companies = await getInsuranceCompanies()
+
+    const serializedQuotes = serializeList(quotesRaw, 'string') as any[]
 
     return (
         <div className="space-y-6">
@@ -27,7 +30,7 @@ export default async function QuotesPage() {
                 </div>
                 <CreateQuoteDialogWrapper clients={clients} companies={companies} />
             </div>
-            <QuoteList quotes={quotes} />
+            <QuoteList quotes={serializedQuotes} />
         </div>
     )
 }

@@ -3,10 +3,13 @@ import { redirect } from "next/navigation"
 import { getUsers } from "@/actions/user"
 import { getMyBillingInfo } from "@/actions/billing"
 import { getMyOrganization } from "@/actions/organization"
+import { getBrandingSettings } from "@/actions/branding"
 import { UserList } from "@/components/settings/user-list"
 import { InviteUserForm } from "@/components/settings/invite-user-form"
 import { BillingInfo } from "@/components/settings/billing-info"
 import { OrganizationInfo } from "@/components/settings/organization-info"
+import { BrandingForm } from "@/components/settings/branding-form"
+import { AuditLogViewer } from "@/components/settings/audit-log-viewer"
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
@@ -17,9 +20,12 @@ const SettingsPage = async () => {
         redirect("/auth/login")
     }
 
-    const users = await getUsers()
-    const billingData = await getMyBillingInfo()
-    const organization = await getMyOrganization()
+    const [users, billingData, organization, brandingSettings] = await Promise.all([
+        getUsers(),
+        getMyBillingInfo(),
+        getMyOrganization(),
+        getBrandingSettings(),
+    ])
 
     return (
         <div className="space-y-6">
@@ -33,12 +39,18 @@ const SettingsPage = async () => {
             <Tabs defaultValue="general" className="space-y-4">
                 <TabsList>
                     <TabsTrigger value="general">General</TabsTrigger>
+                    <TabsTrigger value="branding">Branding</TabsTrigger>
                     <TabsTrigger value="users">Usuarios</TabsTrigger>
-                    <TabsTrigger value="billing">Suscripción y Facturación</TabsTrigger>
+                    <TabsTrigger value="billing">Suscripción</TabsTrigger>
+                    <TabsTrigger value="audit">Auditoría</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="general">
                     <OrganizationInfo organization={organization} />
+                </TabsContent>
+
+                <TabsContent value="branding">
+                    {brandingSettings && <BrandingForm settings={brandingSettings} />}
                 </TabsContent>
 
                 <TabsContent value="users" className="space-y-4">
@@ -57,6 +69,10 @@ const SettingsPage = async () => {
 
                 <TabsContent value="billing">
                     <BillingInfo data={billingData} />
+                </TabsContent>
+
+                <TabsContent value="audit">
+                    <AuditLogViewer />
                 </TabsContent>
             </Tabs>
         </div>

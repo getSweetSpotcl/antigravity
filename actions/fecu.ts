@@ -59,18 +59,18 @@ export const generateFecuReport = async (month: number, year: number): Promise<F
             ]
         },
         include: {
-            client: true,
-            insuranceCompany: true,
+            Client: true,
+            InsuranceCompany: true,
         },
     })
 
     const fecuRows: FecuRow[] = policies.map((policy: any) => {
         return {
             rutCorredor: tenant.rut || "S/I",
-            rutCompania: policy.insuranceCompany?.rut || "S/I",
+            rutCompania: policy.InsuranceCompany?.rut || "S/I",
             nroPoliza: policy.number,
-            rutAsegurado: policy.client.rut,
-            nombreAsegurado: `${policy.client.firstName} ${policy.client.lastName}`,
+            rutAsegurado: policy.Client.rut,
+            nombreAsegurado: `${policy.Client.firstName} ${policy.Client.lastName}`,
             ramo: policy.type,
             inicioVigencia: format(policy.startDate, "dd/MM/yyyy"),
             finVigencia: format(policy.endDate, "dd/MM/yyyy"),

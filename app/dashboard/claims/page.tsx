@@ -3,6 +3,7 @@ import { redirect } from "next/navigation"
 import { getClaims, getPoliciesForClaim } from "@/actions/claim"
 import { ClaimList } from "@/components/claims/claim-list"
 import { CreateClaimDialog } from "@/components/claims/create-claim-dialog"
+import { serializeList } from "@/lib/serialize"
 
 export default async function ClaimsPage() {
     const session = await auth()
@@ -11,10 +12,13 @@ export default async function ClaimsPage() {
         redirect("/auth/login")
     }
 
-    const [claims, policies] = await Promise.all([
+    const [claimsRaw, policiesRaw] = await Promise.all([
         getClaims(),
         getPoliciesForClaim(),
     ])
+
+    const claims = serializeList(claimsRaw)
+    const policies = serializeList(policiesRaw)
 
     return (
         <div className="flex-1 space-y-4 p-8 pt-6">

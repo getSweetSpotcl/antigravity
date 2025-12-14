@@ -25,7 +25,7 @@ export const VehicleDetailsSchema = z.object({
     model: z.string().min(1, "El modelo es requerido"),
     year: z.string().min(4, "El año es requerido"),
     vehicleValue: z.string().optional(),
-    usage: z.enum(["PARTICULAR", "COMERCIAL", "TAXI", "COLECTIVO"]).optional(),
+    usage: z.enum(["PARTICULAR", "COMERCIAL", "TAXI", "COLECTIVO"]),
     chassis: z.string().optional(),
     engine: z.string().optional(),
 })
@@ -46,7 +46,7 @@ export const GuaranteeDetailsSchema = z.object({
     contractAmount: z.string().min(1, "El monto del contrato es requerido"),
     projectDescription: z.string().min(1, "La descripción del proyecto es requerida"),
     beneficiaryName: z.string().optional(), // Puede ser diferente al beneficiario de la póliza
-    duration: z.string().optional(),
+    duration: z.string().min(1, "El plazo de ejecución es requerido"),
 })
 
 // Schema para Responsabilidad Civil
@@ -54,8 +54,8 @@ export const LiabilityDetailsSchema = z.object({
     activityType: z.string().min(1, "El tipo de actividad es requerido"),
     coverageLimit: z.string().min(1, "El límite de cobertura es requerido"),
     numberOfEmployees: z.string().optional(),
-    annualRevenue: z.string().optional(),
-    location: z.string().optional(),
+    annualRevenue: z.string().min(1, "Los ingresos anuales son requeridos"),
+    location: z.string().min(1, "La ubicación es requerida"),
 })
 
 // Schema para Transporte
@@ -87,6 +87,8 @@ export const CoverageItemSchema = z.object({
     }, "La prima debe ser un número positivo o cero"),
     deductible: z.string().optional(),
     required: z.boolean().default(false),
+    // CAD: Número de cláusula adicional (1 por cobertura)
+    cadNumber: z.string().optional(),
 })
 
 // Schema principal para cotización
@@ -97,6 +99,9 @@ export const QuoteSchema = z.object({
     // Cliente o Prospecto
     clientId: z.string().optional(),
     prospectName: z.string().optional(),
+
+    // Vendedor asignado (opcional)
+    agentId: z.string().optional(),
 
     // Tomador (Contratante)
     contractorName: z.string().min(1, "El nombre del tomador es requerido"),
@@ -110,10 +115,10 @@ export const QuoteSchema = z.object({
     insuredRut: z.string().optional(),
     insuredAddress: z.string().optional(),
 
-    // Beneficiario
+    // Beneficiario (completamente opcional)
     beneficiaryName: z.string().optional(),
     beneficiaryRut: z.string().optional(),
-    beneficiaryType: z.enum(["ASEGURADO", "BANCO", "TERCERO"]).optional(),
+    beneficiaryType: z.enum(["ASEGURADO", "BANCO", "TERCERO"]).or(z.literal("")).optional(),
 
     // Información de la póliza
     companyId: z.string().min(1, "Debes seleccionar una compañía"),
@@ -121,14 +126,14 @@ export const QuoteSchema = z.object({
     insuranceLine: z.string().min(1, "Debes seleccionar un rubro"),
     policyType: z.enum(["GENERAL", "LIFE", "HEALTH", "AUTO", "HOME", "GUARANTEE"]),
 
-    // Detalles del bien asegurado (según tipo)
-    propertyDetails: PropertyDetailsSchema.optional(),
-    vehicleDetails: VehicleDetailsSchema.optional(),
-    lifeInsuranceDetails: LifeInsuranceDetailsSchema.optional(),
-    guaranteeDetails: GuaranteeDetailsSchema.optional(),
-    liabilityDetails: LiabilityDetailsSchema.optional(),
-    transportDetails: TransportDetailsSchema.optional(),
-    engineeringDetails: EngineeringDetailsSchema.optional(),
+    // Detalles del bien asegurado (según tipo) - TODOS OPCIONALES
+    propertyDetails: z.any().optional(),
+    vehicleDetails: z.any().optional(),
+    lifeInsuranceDetails: z.any().optional(),
+    guaranteeDetails: z.any().optional(),
+    liabilityDetails: z.any().optional(),
+    transportDetails: z.any().optional(),
+    engineeringDetails: z.any().optional(),
 
     // Opción de texto libre para el bien asegurado
     useCustomPropertyDetails: z.boolean().default(false),
@@ -139,6 +144,8 @@ export const QuoteSchema = z.object({
     totalInsuredAmount: z.string().optional(),
     totalPremium: z.string().min(1, "La prima total es requerida"),
     currency: z.enum(["UF", "CLP", "USD"]).default("UF"),
+    paymentInstallments: z.string().default("1"), // Número de cuotas
+    commissionPercentage: z.string().optional().default("0"), // Comisión corredor %
 
     // Vigencia
     validFrom: z.date().optional(),
@@ -146,6 +153,10 @@ export const QuoteSchema = z.object({
         message: "La fecha de validez es requerida",
     }),
     policyDuration: z.string().optional(), // En meses
+
+    // Campos de póliza chilena (nivel global)
+    polNumber: z.string().optional(), // N° POL (Condiciones Generales) - 1 por póliza
+    particularConditions: z.string().optional(), // Condiciones Particulares - 1 por póliza
 
     // Notas
     notes: z.string().optional(),

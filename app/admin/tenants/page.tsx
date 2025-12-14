@@ -14,13 +14,13 @@ import { format } from "date-fns"
 import { es } from "date-fns/locale"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Settings } from "lucide-react"
+import { Settings, Users } from "lucide-react"
 
 export default async function AdminTenantsPage() {
     const tenants = await getAllTenants()
 
     const calculateMonthlyPayment = (tenant: any) => {
-        let price = tenant.customPrice ?? tenant.assignedPlan?.price ?? 0
+        let price = tenant.customPrice ?? tenant.Plan?.price ?? 0
 
         if (tenant.discountType === "PERCENTAGE" && tenant.discountValue) {
             price = price - (price * (tenant.discountValue / 100))
@@ -35,12 +35,20 @@ export default async function AdminTenantsPage() {
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <h1 className="text-3xl font-bold tracking-tight">Gestión de Tenants</h1>
-                <Link href="/admin/plans">
-                    <Button variant="outline">
-                        <Settings className="mr-2 h-4 w-4" />
-                        Planes de Suscripción
-                    </Button>
-                </Link>
+                <div className="flex gap-2">
+                    <Link href="/admin/users">
+                        <Button variant="outline">
+                            <Users className="mr-2 h-4 w-4" />
+                            Usuarios Plataforma
+                        </Button>
+                    </Link>
+                    <Link href="/admin/plans">
+                        <Button variant="outline">
+                            <Settings className="mr-2 h-4 w-4" />
+                            Planes de Suscripción
+                        </Button>
+                    </Link>
+                </div>
             </div>
 
             <Card>
@@ -68,10 +76,18 @@ export default async function AdminTenantsPage() {
                                     <TableCell className="font-medium">{tenant.name}</TableCell>
                                     <TableCell>{tenant.rut}</TableCell>
                                     <TableCell>
-                                        <Badge variant="outline">{tenant.assignedPlan?.name || tenant.plan || "Custom"}</Badge>
+                                        <Badge variant={tenant.planId ? "outline" : "secondary"}>
+                                            {tenant.Plan?.name || tenant.plan || "Custom"}
+                                        </Badge>
+                                        {!tenant.planId && tenant.plan && (
+                                            <span className="text-xs text-muted-foreground ml-1">(legacy)</span>
+                                        )}
                                     </TableCell>
                                     <TableCell>
                                         ${calculateMonthlyPayment(tenant).toLocaleString("es-CL")}
+                                        {!tenant.planId && !tenant.customPrice && (
+                                            <span className="text-xs text-amber-600 ml-1">*</span>
+                                        )}
                                     </TableCell>
                                     <TableCell>
                                         <Badge
@@ -80,8 +96,8 @@ export default async function AdminTenantsPage() {
                                             {tenant.subscriptionStatus}
                                         </Badge>
                                     </TableCell>
-                                    <TableCell>{tenant._count.users} / {tenant.maxUsers}</TableCell>
-                                    <TableCell>{tenant._count.policies}</TableCell>
+                                    <TableCell>{tenant._count.User} / {tenant.maxUsers}</TableCell>
+                                    <TableCell>{tenant._count.Policy}</TableCell>
                                     <TableCell>
                                         {format(new Date(tenant.createdAt), "dd MMM yyyy", { locale: es })}
                                     </TableCell>

@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button"
 import {
     Dialog,
     DialogContent,
+    DialogDescription,
     DialogHeader,
     DialogTitle,
     DialogTrigger,
@@ -21,6 +22,7 @@ import {
 import { Form } from "@/components/ui/form"
 import { Client, InsuranceCompany } from "@prisma/client"
 import { Progress } from "@/components/ui/progress"
+import { INSURANCE_LINES } from "@/lib/insurance-constants"
 
 // Importar pasos del formulario
 import { Step1ClientInfo } from "./quote-steps/step1-client-info"
@@ -47,6 +49,7 @@ export const CreateQuoteDialog = ({ clients, companies }: CreateQuoteDialogProps
     const [open, setOpen] = useState(false)
     const [currentStep, setCurrentStep] = useState(1)
     const [isPending, startTransition] = useTransition()
+    const [attachedFiles, setAttachedFiles] = useState<File[]>([])
 
     const form = useForm<any>({
         resolver: zodResolver(QuoteSchema),
@@ -56,10 +59,75 @@ export const CreateQuoteDialog = ({ clients, companies }: CreateQuoteDialogProps
             contractorEmail: "",
             contractorPhone: "",
             sameAsContractor: true,
+            beneficiaryName: "",
+            beneficiaryRut: "",
+            beneficiaryType: undefined,
             currency: "UF",
+            paymentInstallments: "1",
+            commissionPercentage: "0",
             coverages: [],
             policyDuration: "12",
+            polNumber: "",
+            particularConditions: "",
             customCompanyName: "",
+            useCustomPropertyDetails: false,
+            customPropertyDetails: "",
+            // Inicializar objetos anidados para evitar errores de uncontrolled/controlled
+            vehicleDetails: {
+                plate: "",
+                year: "",
+                brand: "",
+                model: "",
+                vehicleValue: "",
+                usage: "",
+                chassis: "",
+                engine: "",
+            },
+            propertyDetails: {
+                propertyType: "",
+                constructionType: "",
+                address: "",
+                commune: "",
+                city: "",
+                buildingValue: "",
+                contentsValue: "",
+                yearBuilt: "",
+            },
+            lifeInsuranceDetails: {
+                insuredAge: "",
+                occupation: "",
+                coverageAmount: "",
+                monthlyContribution: "",
+                healthDeclaration: false,
+                smoker: false,
+            },
+            guaranteeDetails: {
+                contractType: "",
+                contractAmount: "",
+                projectDescription: "",
+                beneficiaryName: "",
+                duration: "",
+            },
+            liabilityDetails: {
+                activityType: "",
+                coverageLimit: "",
+                numberOfEmployees: "",
+                annualRevenue: "",
+                location: "",
+            },
+            transportDetails: {
+                cargoType: "",
+                transportMode: "",
+                route: "",
+                insuredValue: "",
+                tripFrequency: "",
+            },
+            engineeringDetails: {
+                projectType: "",
+                projectValue: "",
+                constructionPeriod: "",
+                location: "",
+            },
         },
         mode: "onChange",
     })
@@ -112,8 +180,48 @@ export const CreateQuoteDialog = ({ clients, companies }: CreateQuoteDialogProps
                 }
                 break
             case 3:
-                // La validación de propiedades es más compleja y depende del tipo, pero Zod lo maneja
-                // Validamos todo el form parcial
+                const useCustomDetails = form.getValues("useCustomPropertyDetails")
+
+                // Limpiar error de customPropertyDetails si no se está usando
+                if (!useCustomDetails) {
+                    form.clearErrors("customPropertyDetails")
+                }
+
+                if (useCustomDetails) {
+                    const customDetails = form.getValues("customPropertyDetails")
+                    if (!customDetails || customDetails.trim().length < 10) {
+                        form.setError("customPropertyDetails", {
+                            type: "manual",
+                            message: `La descripción debe tener al menos 10 caracteres (actual: ${customDetails?.length || 0})`
+                        })
+                        toast.error("La descripción del bien asegurado es muy corta. Mínimo 10 caracteres.")
+                        return
+                    }
+                    // Si la descripción es válida, limpiar cualquier error previo
+                    form.clearErrors("customPropertyDetails")
+                } else {
+                    const insuranceLine = form.getValues("insuranceLine")
+                    const lineConfig = INSURANCE_LINES[insuranceLine as keyof typeof INSURANCE_LINES]
+
+                    if (lineConfig) {
+                        if (lineConfig.category === "AUTO") {
+                            fieldsToValidate = ["vehicleDetails.plate", "vehicleDetails.brand", "vehicleDetails.model", "vehicleDetails.year", "vehicleDetails.usage"]
+                        } else if (lineConfig.category === "LIFE") {
+                            fieldsToValidate = ["lifeInsuranceDetails.insuredAge", "lifeInsuranceDetails.occupation", "lifeInsuranceDetails.coverageAmount"]
+                        } else if (lineConfig.category === "GUARANTEE") {
+                            fieldsToValidate = ["guaranteeDetails.contractType", "guaranteeDetails.contractAmount", "guaranteeDetails.projectDescription", "guaranteeDetails.duration"]
+                        } else if (insuranceLine === "RESPONSABILIDAD_CIVIL") {
+                            fieldsToValidate = ["liabilityDetails.activityType", "liabilityDetails.coverageLimit", "liabilityDetails.annualRevenue", "liabilityDetails.location"]
+                        } else if (insuranceLine === "TRANSPORTE") {
+                            fieldsToValidate = ["transportDetails.cargoType", "transportDetails.transportMode", "transportDetails.route", "transportDetails.insuredValue"]
+                        } else if (insuranceLine === "TODO_RIESGO_CONSTRUCCION") {
+                            fieldsToValidate = ["engineeringDetails.projectType", "engineeringDetails.projectValue", "engineeringDetails.constructionPeriod", "engineeringDetails.location"]
+                        } else {
+                            // Default Property
+                            fieldsToValidate = ["propertyDetails.propertyType", "propertyDetails.constructionType", "propertyDetails.address", "propertyDetails.commune", "propertyDetails.city", "propertyDetails.buildingValue"]
+                        }
+                    }
+                }
                 break
             case 4:
                 fieldsToValidate = ["coverages", "currency", "totalPremium"]
@@ -122,7 +230,10 @@ export const CreateQuoteDialog = ({ clients, companies }: CreateQuoteDialogProps
 
         if (fieldsToValidate.length > 0) {
             const isValid = await form.trigger(fieldsToValidate)
-            if (!isValid) return
+            if (!isValid) {
+                toast.error("Por favor completa los campos requeridos antes de continuar.")
+                return
+            }
         }
 
         if (currentStep < STEPS.length) {
@@ -151,9 +262,9 @@ export const CreateQuoteDialog = ({ clients, companies }: CreateQuoteDialogProps
                     <DialogTitle className="text-2xl font-bold">
                         Nueva Cotización - {STEPS[currentStep - 1].title}
                     </DialogTitle>
-                    <p className="text-sm text-muted-foreground">
+                    <DialogDescription>
                         {STEPS[currentStep - 1].description}
-                    </p>
+                    </DialogDescription>
                 </DialogHeader>
 
                 {/* Progress Bar */}
@@ -161,33 +272,41 @@ export const CreateQuoteDialog = ({ clients, companies }: CreateQuoteDialogProps
                     <Progress value={progress} className="h-2" />
                     <div className="flex justify-between text-xs text-muted-foreground">
                         {STEPS.map((step) => (
-                            <div
+                            <button
                                 key={step.id}
-                                className={`flex items-center gap-1 ${step.id === currentStep ? "text-blue-600 font-semibold" : ""
+                                type="button"
+                                onClick={() => setCurrentStep(step.id)}
+                                className={`flex items-center gap-1 transition-colors hover:text-blue-500 cursor-pointer ${step.id === currentStep ? "text-blue-600 font-semibold" : ""
                                     } ${step.id < currentStep ? "text-emerald-600" : ""}`}
                             >
                                 {step.id < currentStep && <Check className="h-3 w-3" />}
                                 <span>{step.title}</span>
-                            </div>
+                            </button>
                         ))}
                     </div>
                 </div>
 
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit, (errors) => {
-                        console.log("Form Errors:", errors)
+                    <form onSubmit={form.handleSubmit(onSubmit, () => {
                         toast.error("Por favor revisa los campos requeridos. Hay errores en el formulario.")
                     })} className="flex-1 overflow-y-auto">
-                        <div className="py-4">
+                        <div className="py-4 px-1">
                             {currentStep === 1 && <Step1ClientInfo form={form} clients={clients} />}
                             {currentStep === 2 && <Step2InsuranceInfo form={form} companies={companies} />}
                             {currentStep === 3 && <Step3PropertyDetails form={form} />}
                             {currentStep === 4 && <Step4Coverages form={form} />}
-                            {currentStep === 5 && <Step5Review form={form} companies={companies} />}
+                            {currentStep === 5 && (
+                                <Step5Review
+                                    form={form}
+                                    companies={companies}
+                                    attachedFiles={attachedFiles}
+                                    onFilesChange={setAttachedFiles}
+                                />
+                            )}
                         </div>
 
                         {/* Navigation Buttons */}
-                        <div className="flex items-center justify-between pt-4 border-t">
+                        <div className="flex items-center justify-between pt-4 border-t mt-auto">
                             <Button
                                 type="button"
                                 variant="outline"

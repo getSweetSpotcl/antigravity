@@ -20,7 +20,7 @@ export const getPlans = async () => {
         orderBy: { price: "asc" },
         include: {
             _count: {
-                select: { tenants: true }
+                select: { Tenant: true }
             }
         }
     })
@@ -94,10 +94,10 @@ export const deletePlan = async (id: string) => {
         // Verificar si tiene tenants asignados
         const plan = await prisma.plan.findUnique({
             where: { id },
-            include: { _count: { select: { tenants: true } } }
+            include: { _count: { select: { Tenant: true } } }
         })
 
-        if (plan && plan._count.tenants > 0) {
+        if (plan && plan._count.Tenant > 0) {
             return { error: "No se puede eliminar un plan con organizaciones asignadas" }
         }
 

@@ -24,8 +24,8 @@ export const getPoliciesNearingExpiration = async (daysAhead: number = 30) => {
             },
         },
         include: {
-            client: true,
-            insuranceCompany: true,
+            Client: true,
+            InsuranceCompany: true,
         },
         orderBy: {
             endDate: "asc",
@@ -72,8 +72,7 @@ export const renewPolicy = async (policyId: string, newEndDate: Date) => {
         })
 
         return { success: true }
-    } catch (error) {
-        console.error("Error renewing policy:", error)
+    } catch {
         return { success: false, error: "Error al renovar la póliza" }
     }
 }
@@ -100,8 +99,7 @@ export const markPolicyAsExpired = async (policyId: string) => {
         })
 
         return { success: true }
-    } catch (error) {
-        console.error("Error marking policy as expired:", error)
+    } catch {
         return { success: false, error: "Error al actualizar la póliza" }
     }
 }

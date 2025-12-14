@@ -18,6 +18,7 @@ import {
 import {
     Form,
     FormControl,
+    FormDescription,
     FormField,
     FormItem,
     FormLabel,
@@ -54,6 +55,8 @@ export function CreateEndorsementDialog({ policyId }: CreateEndorsementDialogPro
             type: "GENERAL_MODIFICATION",
             description: "",
             number: "",
+            premiumChange: "",
+            notes: "",
         },
     })
 
@@ -62,18 +65,28 @@ export function CreateEndorsementDialog({ policyId }: CreateEndorsementDialogPro
         try {
             const result = await createEndorsement(values)
             if (result.success) {
-                toast.success("Endoso registrado correctamente")
+                toast.success(result.success)
                 setOpen(false)
-                form.reset()
+                form.reset({
+                    policyId,
+                    type: "GENERAL_MODIFICATION",
+                    description: "",
+                    number: "",
+                    premiumChange: "",
+                    notes: "",
+                })
             } else {
                 toast.error(result.error || "Error al registrar endoso")
             }
-        } catch (error) {
+        } catch {
             toast.error("Ocurrió un error inesperado")
         } finally {
             setIsPending(false)
         }
     }
+
+    const selectedType = form.watch("type")
+    const showPremiumWarning = selectedType === "CANCELLATION" || selectedType === "RENEWAL"
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
@@ -83,7 +96,7 @@ export function CreateEndorsementDialog({ policyId }: CreateEndorsementDialogPro
                     Nuevo Endoso
                 </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-[500px]">
                 <DialogHeader>
                     <DialogTitle>Registrar Endoso</DialogTitle>
                     <DialogDescription>
@@ -112,61 +125,136 @@ export function CreateEndorsementDialog({ policyId }: CreateEndorsementDialogPro
                                             <SelectItem value="EXCLUSION">Exclusión</SelectItem>
                                         </SelectContent>
                                     </Select>
+                                    {showPremiumWarning && (
+                                        <FormDescription className="text-amber-600">
+                                            {selectedType === "CANCELLATION"
+                                                ? "Este endoso cambiará el estado de la póliza a Cancelada"
+                                                : "Este endoso cambiará el estado de la póliza a Renovada"}
+                                        </FormDescription>
+                                    )}
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
-                        <FormField
-                            control={form.control}
-                            name="date"
-                            render={({ field }) => (
-                                <FormItem className="flex flex-col">
-                                    <FormLabel>Fecha del Endoso</FormLabel>
-                                    <Popover>
-                                        <PopoverTrigger asChild>
-                                            <FormControl>
-                                                <Button
-                                                    variant={"outline"}
-                                                    className={cn(
-                                                        "w-full pl-3 text-left font-normal",
-                                                        !field.value && "text-muted-foreground"
-                                                    )}
-                                                >
-                                                    {field.value ? (
-                                                        format(field.value, "PPP")
-                                                    ) : (
-                                                        <span>Seleccione fecha</span>
-                                                    )}
-                                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                                </Button>
-                                            </FormControl>
-                                        </PopoverTrigger>
-                                        <PopoverContent className="w-auto p-0" align="start">
-                                            <Calendar
-                                                mode="single"
-                                                selected={field.value}
-                                                onSelect={field.onChange}
-                                                initialFocus
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <FormField
+                                control={form.control}
+                                name="date"
+                                render={({ field }) => (
+                                    <FormItem className="flex flex-col">
+                                        <FormLabel>Fecha del Endoso</FormLabel>
+                                        <Popover>
+                                            <PopoverTrigger asChild>
+                                                <FormControl>
+                                                    <Button
+                                                        variant={"outline"}
+                                                        className={cn(
+                                                            "w-full pl-3 text-left font-normal",
+                                                            !field.value && "text-muted-foreground"
+                                                        )}
+                                                    >
+                                                        {field.value ? (
+                                                            format(field.value, "dd/MM/yyyy")
+                                                        ) : (
+                                                            <span>Seleccione</span>
+                                                        )}
+                                                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                                    </Button>
+                                                </FormControl>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-auto p-0" align="start">
+                                                <Calendar
+                                                    mode="single"
+                                                    selected={field.value}
+                                                    onSelect={field.onChange}
+                                                    initialFocus
+                                                />
+                                            </PopoverContent>
+                                        </Popover>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <FormField
+                                control={form.control}
+                                name="effectiveDate"
+                                render={({ field }) => (
+                                    <FormItem className="flex flex-col">
+                                        <FormLabel>Fecha Efectiva</FormLabel>
+                                        <Popover>
+                                            <PopoverTrigger asChild>
+                                                <FormControl>
+                                                    <Button
+                                                        variant={"outline"}
+                                                        className={cn(
+                                                            "w-full pl-3 text-left font-normal",
+                                                            !field.value && "text-muted-foreground"
+                                                        )}
+                                                    >
+                                                        {field.value ? (
+                                                            format(field.value, "dd/MM/yyyy")
+                                                        ) : (
+                                                            <span>Opcional</span>
+                                                        )}
+                                                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                                    </Button>
+                                                </FormControl>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-auto p-0" align="start">
+                                                <Calendar
+                                                    mode="single"
+                                                    selected={field.value}
+                                                    onSelect={field.onChange}
+                                                    initialFocus
+                                                />
+                                            </PopoverContent>
+                                        </Popover>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <FormField
+                                control={form.control}
+                                name="number"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Número de Endoso</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder="Ej: END-001" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <FormField
+                                control={form.control}
+                                name="premiumChange"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Cambio de Prima</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                type="number"
+                                                step="0.01"
+                                                placeholder="Ej: 100 o -50"
+                                                {...field}
                                             />
-                                        </PopoverContent>
-                                    </Popover>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="number"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Número de Endoso (Opcional)</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Ej: END-001" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                                        </FormControl>
+                                        <FormDescription className="text-xs">
+                                            Positivo suma, negativo resta
+                                        </FormDescription>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+
                         <FormField
                             control={form.control}
                             name="description"
@@ -177,6 +265,7 @@ export function CreateEndorsementDialog({ policyId }: CreateEndorsementDialogPro
                                         <Textarea
                                             placeholder="Detalle de la modificación..."
                                             className="resize-none"
+                                            rows={3}
                                             {...field}
                                         />
                                     </FormControl>
@@ -184,7 +273,30 @@ export function CreateEndorsementDialog({ policyId }: CreateEndorsementDialogPro
                                 </FormItem>
                             )}
                         />
+
+                        <FormField
+                            control={form.control}
+                            name="notes"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Notas Internas</FormLabel>
+                                    <FormControl>
+                                        <Textarea
+                                            placeholder="Notas adicionales (solo visibles internamente)..."
+                                            className="resize-none"
+                                            rows={2}
+                                            {...field}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
                         <DialogFooter>
+                            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+                                Cancelar
+                            </Button>
                             <Button type="submit" disabled={isPending}>
                                 {isPending ? "Guardando..." : "Guardar Endoso"}
                             </Button>

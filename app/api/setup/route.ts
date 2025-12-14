@@ -1,13 +1,26 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import bcrypt from 'bcryptjs'
+import { checkRateLimit, getClientIP, rateLimitPresets, createRateLimitedResponse } from "@/lib/rate-limit"
 
-export async function POST() {
+export async function POST(request: Request) {
+    // Rate limiting - very strict for setup endpoints
+    const ip = getClientIP(request)
+    const rateLimit = checkRateLimit(ip, {
+        ...rateLimitPresets.auth,
+        limit: 5, // Very strict: 5 requests per minute
+        identifier: "setup",
+    })
+
+    if (!rateLimit.success) {
+        return createRateLimitedResponse()
+    }
+
     try {
         // Verificar usuarios existentes
         const existingUsers = await prisma.user.findMany({
             include: {
-                tenant: true
+                Tenant: true
             }
         })
 
@@ -18,7 +31,7 @@ export async function POST() {
                     email: user.email,
                     name: user.name,
                     role: user.role,
-                    tenant: user.tenant?.name
+                    tenant: user.Tenant?.name
                 }))
             })
         }

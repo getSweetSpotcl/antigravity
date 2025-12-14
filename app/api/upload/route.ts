@@ -1,8 +1,20 @@
 import { handleUpload, type HandleUploadBody } from "@vercel/blob/client"
 import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
+import { checkRateLimit, getClientIP, rateLimitPresets, createRateLimitedResponse } from "@/lib/rate-limit"
 
 export async function POST(request: Request): Promise<NextResponse> {
+    // Rate limiting for uploads
+    const ip = getClientIP(request)
+    const rateLimit = checkRateLimit(ip, {
+        ...rateLimitPresets.upload,
+        identifier: "upload",
+    })
+
+    if (!rateLimit.success) {
+        return createRateLimitedResponse() as NextResponse
+    }
+
     const body = (await request.json()) as HandleUploadBody
 
     try {
@@ -26,9 +38,7 @@ export async function POST(request: Request): Promise<NextResponse> {
                 }
             },
             onUploadCompleted: async ({ blob, tokenPayload }) => {
-                // Aquí podríamos guardar la referencia en la DB inmediatamente,
-                // o esperar a que el cliente nos confirme (que es lo que haremos en el server action)
-                console.log("Upload completed:", blob.url)
+                // La referencia se guarda en la DB a través del server action
             },
         })
 

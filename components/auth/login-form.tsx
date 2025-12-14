@@ -53,7 +53,13 @@ export const LoginForm = () => {
                         toast.error(data.error)
                     }
                 })
-                .catch(() => {
+                .catch((error) => {
+                    // NextAuth throws NEXT_REDIRECT on successful login - ignore it
+                    const errorMessage = error?.message || ""
+                    const errorDigest = error?.digest || ""
+                    if (errorMessage.includes("NEXT_REDIRECT") || errorDigest.includes("NEXT_REDIRECT")) {
+                        return // Successful redirect, don't show error
+                    }
                     setError("Algo salió mal")
                     toast.error("Algo salió mal")
                 })
@@ -64,11 +70,11 @@ export const LoginForm = () => {
         <div className="w-full">
             {/* Header */}
             <div className="mb-8">
-                <h2 className="text-3xl font-bold text-slate-900 mb-2">
-                    Bienvenido de nuevo
+                <h2 className="text-3xl font-black tracking-tight text-slate-900 mb-2">
+                    Iniciar sesión
                 </h2>
-                <p className="text-slate-600">
-                    Ingresa tus credenciales para acceder a tu cuenta
+                <p className="text-slate-500">
+                    Ingresa a tu cuenta para gestionar tu correduría
                 </p>
             </div>
 
@@ -151,7 +157,7 @@ export const LoginForm = () => {
                     <Button
                         disabled={isPending}
                         type="submit"
-                        className="w-full h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 transition-all duration-200 group"
+                        className="w-full h-12 bg-slate-900 hover:bg-slate-800 text-white font-semibold shadow-lg shadow-slate-900/20 hover:shadow-xl hover:shadow-slate-900/30 transition-all duration-200 group rounded-xl"
                     >
                         {isPending ? (
                             <div className="flex items-center gap-2">
@@ -160,7 +166,7 @@ export const LoginForm = () => {
                             </div>
                         ) : (
                             <div className="flex items-center gap-2">
-                                <span>Ingresar</span>
+                                <span>Continuar</span>
                                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                             </div>
                         )}

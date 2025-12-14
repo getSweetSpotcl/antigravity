@@ -8,7 +8,7 @@ async function main() {
 
         const users = await prisma.user.findMany({
             include: {
-                tenant: true
+                Tenant: true
             }
         })
 
@@ -23,7 +23,7 @@ async function main() {
             console.log(`${index + 1}. Email: ${user.email}`)
             console.log(`   Nombre: ${user.name}`)
             console.log(`   Rol: ${user.role}`)
-            console.log(`   Tenant: ${user.tenant?.name || 'N/A'}`)
+            console.log(`   Tenant: ${user.Tenant?.name || 'N/A'}`)
             console.log(`   ID: ${user.id}`)
             console.log('')
         })

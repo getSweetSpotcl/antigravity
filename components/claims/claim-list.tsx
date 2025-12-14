@@ -1,110 +1,168 @@
-// @ts-ignore
-import { Claim, Policy, Client, InsuranceCompany, ClaimStatus } from "@prisma/client"
+"use client"
+
+import { useMemo } from "react"
+import { ColumnDef } from "@tanstack/react-table"
+import type { ClaimStatus } from "@prisma/client"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
-
-interface ClaimWithPolicy extends Claim {
-    policy: Policy & {
-        client: Client
-        insuranceCompany: InsuranceCompany | null
-    }
-}
+import { useRouter } from "next/navigation"
+import { DataTable, DataTableColumnHeader, FilterConfig } from "@/components/ui/data-table"
 
 interface ClaimListProps {
     claims: any[]
 }
 
-const getStatusLabel = (status: ClaimStatus) => {
-    const labels: Record<ClaimStatus, string> = {
-        REPORTED: "Reportado",
-        IN_PROCESS: "En Proceso",
-        APPROVED: "Aprobado",
-        REJECTED: "Rechazado",
-        CLOSED: "Cerrado",
-    }
-    return labels[status] || status
+const statusConfig: Record<ClaimStatus, { label: string; color: string; dot: string }> = {
+    REPORTED: { label: "Reportado", color: "bg-amber-100 text-amber-700 border-amber-200", dot: "bg-amber-500" },
+    IN_PROCESS: { label: "En Proceso", color: "bg-blue-100 text-blue-700 border-blue-200", dot: "bg-blue-500 status-pulse" },
+    APPROVED: { label: "Aprobado", color: "bg-emerald-100 text-emerald-700 border-emerald-200", dot: "bg-emerald-500" },
+    REJECTED: { label: "Rechazado", color: "bg-red-100 text-red-700 border-red-200", dot: "bg-red-500" },
+    CLOSED: { label: "Cerrado", color: "bg-slate-100 text-slate-700 border-slate-200", dot: "bg-slate-400" },
 }
 
-const getStatusVariant = (status: ClaimStatus): "default" | "secondary" | "destructive" | "outline" => {
-    const variants: Record<ClaimStatus, "default" | "secondary" | "destructive" | "outline"> = {
-        REPORTED: "secondary",
-        IN_PROCESS: "default",
-        APPROVED: "outline",
-        REJECTED: "destructive",
-        CLOSED: "secondary",
-    }
-    return variants[status] || "secondary"
-}
+const statusOptions = [
+    { label: "Reportado", value: "REPORTED" },
+    { label: "En Proceso", value: "IN_PROCESS" },
+    { label: "Aprobado", value: "APPROVED" },
+    { label: "Rechazado", value: "REJECTED" },
+    { label: "Cerrado", value: "CLOSED" },
+]
 
 export function ClaimList({ claims }: ClaimListProps) {
+    const router = useRouter()
+
+    const columns: ColumnDef<any>[] = useMemo(() => [
+        {
+            accessorKey: "number",
+            header: ({ column }) => (
+                <DataTableColumnHeader column={column} title="Número" />
+            ),
+            cell: ({ row }) => (
+                <Link
+                    href={`/dashboard/claims/${row.original.id}`}
+                    className="hover:underline text-blue-600 font-medium"
+                    onClick={(e) => e.stopPropagation()}
+                >
+                    {row.original.number || "-"}
+                </Link>
+            ),
+        },
+        {
+            accessorKey: "policyNumber",
+            accessorFn: (row) => row.Policy?.number || "",
+            header: ({ column }) => (
+                <DataTableColumnHeader column={column} title="Póliza" />
+            ),
+            cell: ({ row }) => (
+                <Link
+                    href={`/dashboard/policies/${row.original.policyId}`}
+                    className="hover:underline text-blue-600"
+                    onClick={(e) => e.stopPropagation()}
+                >
+                    {row.original.Policy?.number}
+                </Link>
+            ),
+        },
+        {
+            accessorKey: "clientName",
+            accessorFn: (row) => row.Policy?.Client ? `${row.Policy.Client.firstName} ${row.Policy.Client.lastName}` : "",
+            header: ({ column }) => (
+                <DataTableColumnHeader column={column} title="Cliente" />
+            ),
+            cell: ({ row }) => (
+                <span>
+                    {row.original.Policy?.Client?.firstName} {row.original.Policy?.Client?.lastName}
+                </span>
+            ),
+        },
+        {
+            accessorKey: "companyName",
+            accessorFn: (row) => row.Policy?.InsuranceCompany?.name || row.Policy?.company || "",
+            header: ({ column }) => (
+                <DataTableColumnHeader column={column} title="Compañía" />
+            ),
+            cell: ({ row }) => row.original.Policy?.InsuranceCompany?.name || row.original.Policy?.company,
+        },
+        {
+            accessorKey: "date",
+            header: ({ column }) => (
+                <DataTableColumnHeader column={column} title="Fecha Siniestro" />
+            ),
+            cell: ({ row }) => format(new Date(row.original.date), "PPP", { locale: es }),
+            sortingFn: (rowA, rowB) => {
+                const dateA = new Date(rowA.original.date).getTime()
+                const dateB = new Date(rowB.original.date).getTime()
+                return dateA - dateB
+            },
+        },
+        {
+            accessorKey: "status",
+            header: ({ column }) => (
+                <DataTableColumnHeader column={column} title="Estado" />
+            ),
+            cell: ({ row }) => {
+                const status = row.original.status as ClaimStatus
+                const config = statusConfig[status] || statusConfig.REPORTED
+                return (
+                    <Badge
+                        variant="outline"
+                        className={`${config.color} border gap-1.5`}
+                    >
+                        <span className={`w-1.5 h-1.5 rounded-full ${config.dot}`} />
+                        {config.label}
+                    </Badge>
+                )
+            },
+            filterFn: (row, id, value) => {
+                return value.includes(row.getValue(id))
+            },
+        },
+        {
+            accessorKey: "description",
+            header: ({ column }) => (
+                <DataTableColumnHeader column={column} title="Descripción" />
+            ),
+            cell: ({ row }) => (
+                <span className="max-w-xs truncate block">
+                    {row.original.description}
+                </span>
+            ),
+        },
+    ], [])
+
+    const filters: FilterConfig[] = useMemo(() => [
+        {
+            column: "status",
+            title: "Estado",
+            options: statusOptions,
+        },
+    ], [])
+
+    const handleRowClick = (claim: any) => {
+        router.push(`/dashboard/claims/${claim.id}`)
+    }
+
     return (
-        <div className="rounded-md border">
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>Número</TableHead>
-                        <TableHead>Póliza</TableHead>
-                        <TableHead>Cliente</TableHead>
-                        <TableHead>Compañía</TableHead>
-                        <TableHead>Fecha Siniestro</TableHead>
-                        <TableHead>Estado</TableHead>
-                        <TableHead>Descripción</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {claims.length === 0 ? (
-                        <TableRow>
-                            <TableCell colSpan={7} className="text-center h-24 text-muted-foreground">
-                                No hay siniestros reportados.
-                            </TableCell>
-                        </TableRow>
-                    ) : (
-                        claims.map((claim) => (
-                            <TableRow key={claim.id}>
-                                <TableCell className="font-medium">
-                                    <Link
-                                        href={`/dashboard/claims/${claim.id}`}
-                                        className="hover:underline text-blue-600"
-                                    >
-                                        {claim.number || "-"}
-                                    </Link>
-                                </TableCell>
-                                <TableCell>
-                                    <Link
-                                        href={`/dashboard/policies/${claim.policyId}`}
-                                        className="hover:underline text-blue-600"
-                                    >
-                                        {claim.policy.number}
-                                    </Link>
-                                </TableCell>
-                                <TableCell>
-                                    {claim.policy.client.firstName} {claim.policy.client.lastName}
-                                </TableCell>
-                                <TableCell>
-                                    {claim.policy.insuranceCompany?.name || claim.policy.company}
-                                </TableCell>
-                                <TableCell>{format(claim.date, "PPP", { locale: es })}</TableCell>
-                                <TableCell>
-                                    <Badge variant={getStatusVariant(claim.status)}>
-                                        {getStatusLabel(claim.status)}
-                                    </Badge>
-                                </TableCell>
-                                <TableCell className="max-w-xs truncate">{claim.description}</TableCell>
-                            </TableRow>
-                        ))
-                    )}
-                </TableBody>
-            </Table>
-        </div>
+        <Card className="border-slate-200/80 shadow-sm">
+            <CardHeader className="pb-4">
+                <CardTitle className="text-xl font-bold tracking-tight">Siniestros</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <DataTable
+                    columns={columns}
+                    data={claims}
+                    searchable={true}
+                    searchPlaceholder="Buscar por número, cliente, póliza..."
+                    filters={filters}
+                    paginated={true}
+                    pageSize={10}
+                    emptyMessage="No hay siniestros reportados."
+                    onRowClick={handleRowClick}
+                />
+            </CardContent>
+        </Card>
     )
 }

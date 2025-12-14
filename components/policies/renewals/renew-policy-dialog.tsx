@@ -23,8 +23,8 @@ import { renewPolicy } from "@/actions/renewal"
 
 interface RenewPolicyDialogProps {
     policy: Policy & {
-        client: Client
-        insuranceCompany: InsuranceCompany | null
+        Client: Client
+        InsuranceCompany: InsuranceCompany | null
     }
 }
 
@@ -70,7 +70,7 @@ export function RenewPolicyDialog({ policy }: RenewPolicyDialogProps) {
                     <div className="space-y-2">
                         <p className="text-sm font-medium">Cliente</p>
                         <p className="text-sm text-muted-foreground">
-                            {policy.client.firstName} {policy.client.lastName}
+                            {policy.Client.firstName} {policy.Client.lastName}
                         </p>
                     </div>
                     <div className="space-y-2">

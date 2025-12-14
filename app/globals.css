@@ -43,83 +43,93 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
+/* GiCS - Gestión Integral para Corredores de Seguros */
+/* Corporate Blue Theme - Professional and Traditional */
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --background: 210 40% 98%;
-  /* Light gray/blue tint for main background */
-  --foreground: 222.2 84% 4.9%;
+  --radius: 0.5rem;
 
-  --card: 0 0% 100%;
-  --card-foreground: 222.2 84% 4.9%;
+  /* Background - Light slate */
+  --background: hsl(210 40% 98%);
+  --foreground: hsl(215 25% 15%);
 
-  --popover: 0 0% 100%;
-  --popover-foreground: 222.2 84% 4.9%;
+  /* Cards - Clean white with subtle borders */
+  --card: hsl(0 0% 100%);
+  --card-foreground: hsl(215 25% 15%);
 
-  --primary: 221.2 83.2% 53.3%;
-  /* Blue 600 #2563EB */
-  --primary-foreground: 210 40% 98%;
+  --popover: hsl(0 0% 100%);
+  --popover-foreground: hsl(215 25% 15%);
 
-  --secondary: 210 40% 96.1%;
-  --secondary-foreground: 222.2 47.4% 11.2%;
+  /* Primary - Sky blue (corporate) */
+  --primary: hsl(199 89% 48%);
+  --primary-foreground: hsl(0 0% 100%);
 
-  --muted: 210 40% 96.1%;
-  --muted-foreground: 215.4 16.3% 46.9%;
+  /* Secondary - Soft slate */
+  --secondary: hsl(210 40% 96%);
+  --secondary-foreground: hsl(215 25% 27%);
 
-  --accent: 210 40% 96.1%;
-  --accent-foreground: 222.2 47.4% 11.2%;
+  /* Muted - Slate gray */
+  --muted: hsl(210 40% 96%);
+  --muted-foreground: hsl(215 16% 47%);
 
-  --destructive: 0 84.2% 60.2%;
-  --destructive-foreground: 210 40% 98%;
+  /* Accent - Sky blue lighter */
+  --accent: hsl(199 89% 48%);
+  --accent-foreground: hsl(0 0% 100%);
 
-  --border: 214.3 31.8% 91.4%;
-  --input: 214.3 31.8% 91.4%;
-  --ring: 221.2 83.2% 53.3%;
+  /* Destructive */
+  --destructive: hsl(0 72% 51%);
+  --destructive-foreground: hsl(0 0% 100%);
 
-  --radius: 0.75rem;
+  /* Borders and inputs */
+  --border: hsl(214 32% 91%);
+  --input: hsl(214 32% 91%);
+  --ring: hsl(199 89% 48%);
+
+  /* Chart colors - Corporate palette */
+  --chart-1: hsl(199 89% 48%);
+  --chart-2: hsl(160 84% 39%);
+  --chart-3: hsl(262 83% 58%);
+  --chart-4: hsl(43 96% 56%);
+  --chart-5: hsl(0 72% 51%);
+
+  /* Sidebar - Navy blue (Corporate Blue #1e3a5f) */
+  --sidebar: hsl(210 52% 24%);
+  --sidebar-foreground: hsl(210 40% 98%);
+  --sidebar-primary: hsl(199 89% 58%);
+  --sidebar-primary-foreground: hsl(0 0% 100%);
+  --sidebar-accent: hsl(199 70% 30%);
+  --sidebar-accent-foreground: hsl(199 80% 75%);
+  --sidebar-border: hsl(210 40% 30%);
+  --sidebar-ring: hsl(199 89% 58%);
 }
 
 .dark {
-  --background: 222.2 84% 4.9%;
-  --foreground: 210 40% 98%;
+  --background: hsl(222.2 84% 4.9%);
+  --foreground: hsl(210 40% 98%);
 
-  --card: 222.2 84% 4.9%;
-  --card-foreground: 210 40% 98%;
+  --card: hsl(222.2 84% 4.9%);
+  --card-foreground: hsl(210 40% 98%);
 
-  --popover: 222.2 84% 4.9%;
-  --popover-foreground: 210 40% 98%;
+  --popover: hsl(222.2 84% 4.9%);
+  --popover-foreground: hsl(210 40% 98%);
 
-  --primary: 217.2 91.2% 59.8%;
-  --primary-foreground: 222.2 47.4% 11.2%;
+  --primary: hsl(217.2 91.2% 59.8%);
+  --primary-foreground: hsl(222.2 47.4% 11.2%);
 
-  --secondary: 217.2 32.6% 17.5%;
-  --secondary-foreground: 210 40% 98%;
+  --secondary: hsl(217.2 32.6% 17.5%);
+  --secondary-foreground: hsl(210 40% 98%);
 
-  --muted: 217.2 32.6% 17.5%;
-  --muted-foreground: 215 20.2% 65.1%;
+  --muted: hsl(217.2 32.6% 17.5%);
+  --muted-foreground: hsl(215 20.2% 65.1%);
 
-  --accent: 217.2 32.6% 17.5%;
-  --accent-foreground: 210 40% 98%;
+  --accent: hsl(217.2 32.6% 17.5%);
+  --accent-foreground: hsl(210 40% 98%);
 
-  --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 210 40% 98%;
+  --destructive: hsl(0 62.8% 30.6%);
+  --destructive-foreground: hsl(210 40% 98%);
 
-  --border: 217.2 32.6% 17.5%;
-  --input: 217.2 32.6% 17.5%;
-  --ring: 212.7 26.8% 83.9%;
+  --border: hsl(217.2 32.6% 17.5%);
+  --input: hsl(217.2 32.6% 17.5%);
+  --ring: hsl(212.7 26.8% 83.9%);
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
@@ -174,4 +184,109 @@
 
 .animation-delay-4000 {
   animation-delay: 4s;
+}
+
+/* GiCS Custom Utilities */
+
+/* Gradient text for branding */
+.text-gradient-gics {
+  background: linear-gradient(135deg, hsl(217 91% 50%) 0%, hsl(173 58% 39%) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Card hover effects */
+.card-hover {
+  transition: all 0.2s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.08);
+}
+
+/* Stat card gradients */
+.stat-card-blue {
+  background: linear-gradient(135deg, hsl(217 91% 98%) 0%, hsl(217 91% 95%) 100%);
+  border: 1px solid hsl(217 91% 90%);
+}
+
+.stat-card-teal {
+  background: linear-gradient(135deg, hsl(173 58% 97%) 0%, hsl(173 58% 93%) 100%);
+  border: 1px solid hsl(173 58% 85%);
+}
+
+.stat-card-amber {
+  background: linear-gradient(135deg, hsl(43 96% 97%) 0%, hsl(43 96% 92%) 100%);
+  border: 1px solid hsl(43 96% 80%);
+}
+
+.stat-card-purple {
+  background: linear-gradient(135deg, hsl(262 83% 98%) 0%, hsl(262 83% 94%) 100%);
+  border: 1px solid hsl(262 83% 88%);
+}
+
+/* Sidebar active state glow */
+.sidebar-active-glow {
+  box-shadow: 0 0 20px -5px hsl(217 91% 50% / 0.3);
+}
+
+/* Number formatting */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Smooth page transitions */
+.page-transition {
+  animation: pageIn 0.3s ease-out;
+}
+
+@keyframes pageIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Status badge animations */
+.status-pulse {
+  animation: statusPulse 2s ease-in-out infinite;
+}
+
+@keyframes statusPulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Glass morphism effects */
+.glass {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.glass-dark {
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* Hide number input spinners */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
 }

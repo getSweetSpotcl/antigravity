@@ -13,8 +13,8 @@ export const getMyBillingInfo = async () => {
     const tenant = await prisma.tenant.findUnique({
         where: { id: tenantId },
         include: {
-            assignedPlan: true,
-            billingRecords: {
+            Plan: true,
+            BillingRecord: {
                 orderBy: { issueDate: "desc" },
                 take: 10
             }
@@ -26,7 +26,7 @@ export const getMyBillingInfo = async () => {
     }
 
     // Calcular monto mensual
-    let monthlyAmount = tenant.customPrice ?? tenant.assignedPlan?.price ?? 0
+    let monthlyAmount = tenant.customPrice ?? tenant.Plan?.price ?? 0
 
     if (tenant.discountType === "PERCENTAGE" && tenant.discountValue) {
         monthlyAmount = monthlyAmount - (monthlyAmount * (tenant.discountValue / 100))
@@ -39,7 +39,7 @@ export const getMyBillingInfo = async () => {
     return {
         tenant,
         monthlyAmount,
-        planName: tenant.assignedPlan?.name || "Plan Personalizado",
-        billingRecords: tenant.billingRecords
+        planName: tenant.Plan?.name || "Plan Personalizado",
+        billingRecords: tenant.BillingRecord
     }
 }

@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth"
 import { redirect } from "next/navigation"
 import { getPoliciesNearingExpiration } from "@/actions/renewal"
+import { serializeList } from "@/lib/serialize"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -23,7 +24,8 @@ export default async function Page() {
         redirect("/auth/login")
     }
 
-    const policiesNearingExpiration = await getPoliciesNearingExpiration(60) // 60 días
+    const policiesRaw = await getPoliciesNearingExpiration(60) // 60 días
+    const policiesNearingExpiration = serializeList(policiesRaw)
 
     const criticalPolicies = policiesNearingExpiration.filter(
         (p) => differenceInDays(p.endDate, new Date()) <= 15
@@ -68,10 +70,10 @@ export default async function Page() {
                                         <TableRow key={policy.id}>
                                             <TableCell className="font-medium">{policy.number}</TableCell>
                                             <TableCell>
-                                                {policy.client.firstName} {policy.client.lastName}
+                                                {policy.Client.firstName} {policy.Client.lastName}
                                             </TableCell>
                                             <TableCell>
-                                                {policy.insuranceCompany?.name || policy.company}
+                                                {policy.InsuranceCompany?.name || policy.company}
                                             </TableCell>
                                             <TableCell>
                                                 {format(policy.endDate, "PPP", { locale: es })}
@@ -119,10 +121,10 @@ export default async function Page() {
                                         <TableRow key={policy.id}>
                                             <TableCell className="font-medium">{policy.number}</TableCell>
                                             <TableCell>
-                                                {policy.client.firstName} {policy.client.lastName}
+                                                {policy.Client.firstName} {policy.Client.lastName}
                                             </TableCell>
                                             <TableCell>
-                                                {policy.insuranceCompany?.name || policy.company}
+                                                {policy.InsuranceCompany?.name || policy.company}
                                             </TableCell>
                                             <TableCell>
                                                 {format(policy.endDate, "PPP", { locale: es })}

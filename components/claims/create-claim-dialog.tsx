@@ -5,8 +5,6 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { ClaimSchema, ClaimFormValues } from "@/schemas/claim"
 import { createClaim } from "@/actions/claim"
-// @ts-ignore
-import { Policy, Client } from "@prisma/client"
 import { Button } from "@/components/ui/button"
 import {
     Dialog,
@@ -42,8 +40,17 @@ import { es } from "date-fns/locale"
 import { CalendarIcon, AlertTriangle } from "lucide-react"
 import { toast } from "sonner"
 
+interface PolicyForClaim {
+    id: string
+    number: string
+    Client: {
+        firstName: string
+        lastName: string
+    }
+}
+
 interface CreateClaimDialogProps {
-    policies: (Policy & { client: Client })[]
+    policies: PolicyForClaim[]
 }
 
 export function CreateClaimDialog({ policies }: CreateClaimDialogProps) {
@@ -110,8 +117,8 @@ export function CreateClaimDialog({ policies }: CreateClaimDialogProps) {
                                         <SelectContent>
                                             {policies.map((policy) => (
                                                 <SelectItem key={policy.id} value={policy.id}>
-                                                    {policy.number} - {policy.client.firstName}{" "}
-                                                    {policy.client.lastName}
+                                                    {policy.number} - {policy.Client.firstName}{" "}
+                                                    {policy.Client.lastName}
                                                 </SelectItem>
                                             ))}
                                         </SelectContent>

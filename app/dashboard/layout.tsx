@@ -4,7 +4,9 @@ import { TopNav } from "@/components/dashboard/top-nav"
 import { auth } from "@/lib/auth"
 import { redirect } from "next/navigation"
 import { SessionProvider } from "@/components/providers/session-provider"
+import { ThemeProvider } from "@/components/theme-provider"
 import { AdminContextBanner } from "@/components/admin/admin-context-banner"
+import { Breadcrumbs } from "@/components/shared/breadcrumbs"
 import { cookies } from "next/headers"
 import { ADMIN_TENANT_COOKIE } from "@/lib/tenant-context"
 import { prisma } from "@/lib/db"
@@ -36,23 +38,26 @@ export default async function DashboardLayout({
 
     return (
         <SessionProvider>
-            <SidebarProvider>
-                <AppSidebar />
-                <main className="flex min-h-screen flex-1 flex-col bg-[#F0F4F8]">
-                    <AdminContextBanner
-                        isSuperAdmin={isSuperAdmin}
-                        hasActiveContext={hasActiveContext}
-                        tenantName={tenantName}
-                    />
-                    <TopNav />
-                    <div className="flex-1 p-8">
-                        <div className="flex items-center gap-2 pb-4 md:hidden">
-                            <SidebarTrigger />
+            <ThemeProvider>
+                <SidebarProvider>
+                    <AppSidebar />
+                    <main className="flex min-h-screen flex-1 flex-col bg-slate-50 dark:bg-slate-950 transition-colors">
+                        <AdminContextBanner
+                            isSuperAdmin={isSuperAdmin}
+                            hasActiveContext={hasActiveContext}
+                            tenantName={tenantName}
+                        />
+                        <TopNav />
+                        <div className="flex-1 p-8">
+                            <div className="flex items-center gap-2 pb-4 md:hidden">
+                                <SidebarTrigger />
+                            </div>
+                            <Breadcrumbs className="mb-4" />
+                            {children}
                         </div>
-                        {children}
-                    </div>
-                </main>
-            </SidebarProvider>
+                    </main>
+                </SidebarProvider>
+            </ThemeProvider>
         </SessionProvider>
     )
 }

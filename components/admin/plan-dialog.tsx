@@ -30,9 +30,9 @@ import { Plus, Pencil } from "lucide-react"
 const PlanSchema = z.object({
     name: z.string().min(1, "El nombre es requerido"),
     description: z.string().optional(),
-    price: z.number().min(0, "El precio debe ser mayor o igual a 0"),
-    maxUsers: z.number().min(1, "Mínimo 1 usuario"),
-    maxStorage: z.number().min(1, "Mínimo 1 GB"),
+    price: z.coerce.number().min(0, "El precio debe ser mayor o igual a 0"),
+    maxUsers: z.coerce.number().min(1, "Mínimo 1 usuario"),
+    maxStorage: z.coerce.number().min(1, "Mínimo 1 GB"),
     isActive: z.boolean().default(true),
 })
 

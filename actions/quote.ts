@@ -41,15 +41,22 @@ export const getQuotes = async () => {
             tenantId: tenantId,
         },
         include: {
-            client: true,
-            company: true,
-            tenant: true,
-            attachments: {
+            Client: true,
+            InsuranceCompany: true,
+            Tenant: true,
+            Agent: {
+                select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                },
+            },
+            QuoteAttachment: {
                 orderBy: {
                     createdAt: "desc",
                 },
             },
-            communications: {
+            QuoteCommunication: {
                 orderBy: {
                     createdAt: "desc",
                 },
@@ -75,14 +82,30 @@ export const getQuoteById = async (id: string) => {
     const quote = await prisma.quote.findUnique({
         where: { id },
         include: {
-            client: true,
-            company: true,
-            attachments: {
+            Client: true,
+            InsuranceCompany: true,
+            Tenant: true,
+            Agent: {
+                select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                    defaultCommissionPercentage: true,
+                },
+            },
+            QuoteAttachment: {
                 orderBy: {
                     createdAt: "desc",
                 },
             },
-            communications: {
+            QuoteCommunication: {
+                include: {
+                    CommunicationAttachment: {
+                        orderBy: {
+                            createdAt: "desc",
+                        },
+                    },
+                },
                 orderBy: {
                     createdAt: "desc",
                 },
@@ -115,6 +138,7 @@ export const createQuote = async (values: z.infer<typeof QuoteSchema>) => {
         quoteNumber,
         clientId,
         prospectName,
+        agentId,
         contractorName,
         contractorRut,
         contractorEmail,
@@ -200,13 +224,22 @@ export const createQuote = async (values: z.infer<typeof QuoteSchema>) => {
         }
 
         // Generar número de cotización si no existe
-        const generatedQuoteNumber = quoteNumber || `COT-${Date.now()}`
+        const generateQuoteNumber = () => {
+            const date = new Date()
+            const year = date.getFullYear()
+            const month = String(date.getMonth() + 1).padStart(2, '0')
+            const day = String(date.getDate()).padStart(2, '0')
+            const random = String(Math.floor(Math.random() * 10000)).padStart(4, '0')
+            return `COT-${year}${month}${day}-${random}`
+        }
+        const generatedQuoteNumber = quoteNumber || generateQuoteNumber()
 
         await prisma.quote.create({
             data: {
                 quoteNumber: generatedQuoteNumber,
                 prospectName: prospectName || null,
                 clientId: clientId || null,
+                agentId: agentId || null,
                 contractorName,
                 contractorRut,
                 contractorEmail: contractorEmail || null,
@@ -239,6 +272,158 @@ export const createQuote = async (values: z.infer<typeof QuoteSchema>) => {
     } catch (error) {
         console.error("Error creating quote:", error)
         return { error: "Error al crear la cotización" }
+    }
+}
+
+// Actualizar cotización completa
+export const updateQuote = async (id: string, values: z.infer<typeof QuoteSchema>) => {
+    const tenantId = await getTenantContext()
+
+    if (!tenantId) {
+        return { error: "No autorizado" }
+    }
+
+    const validatedFields = QuoteSchema.safeParse(values)
+
+    if (!validatedFields.success) {
+        return { error: "Datos inválidos" }
+    }
+
+    const {
+        quoteNumber,
+        clientId,
+        prospectName,
+        agentId,
+        contractorName,
+        contractorRut,
+        contractorEmail,
+        contractorPhone,
+        sameAsContractor,
+        insuredName,
+        insuredRut,
+        insuredAddress,
+        beneficiaryName,
+        beneficiaryRut,
+        beneficiaryType,
+        companyId,
+        customCompanyName,
+        insuranceLine,
+        policyType,
+        propertyDetails,
+        vehicleDetails,
+        lifeInsuranceDetails,
+        guaranteeDetails,
+        liabilityDetails,
+        transportDetails,
+        engineeringDetails,
+        useCustomPropertyDetails,
+        customPropertyDetails,
+        coverages,
+        totalInsuredAmount,
+        totalPremium,
+        currency,
+        validFrom,
+        validUntil,
+        policyDuration,
+        notes,
+        internalNotes,
+    } = validatedFields.data
+
+    try {
+        const existingQuote = await prisma.quote.findUnique({
+            where: { id },
+        })
+
+        if (!existingQuote || existingQuote.tenantId !== tenantId) {
+            return { error: "Cotización no encontrada" }
+        }
+
+        // Manejar creación de compañía personalizada
+        let finalCompanyId = companyId
+        if (companyId === "OTHER" && customCompanyName) {
+            const existingCompany = await prisma.insuranceCompany.findFirst({
+                where: {
+                    name: { equals: customCompanyName, mode: 'insensitive' },
+                    tenantId: tenantId
+                }
+            })
+
+            if (existingCompany) {
+                finalCompanyId = existingCompany.id
+            } else {
+                const newCompany = await prisma.insuranceCompany.create({
+                    data: {
+                        name: customCompanyName,
+                        tenantId: tenantId,
+                        rut: 'S/I',
+                        contact: 'S/I',
+                        email: 'S/I',
+                        phone: 'S/I'
+                    }
+                })
+                finalCompanyId = newCompany.id
+            }
+        }
+
+        // Construir el objeto de detalles del bien asegurado
+        let insuredProperty: any = {}
+
+        if (useCustomPropertyDetails && customPropertyDetails) {
+            insuredProperty = { description: customPropertyDetails, type: "CUSTOM" }
+        } else if (propertyDetails) {
+            insuredProperty = propertyDetails
+        } else if (vehicleDetails) {
+            insuredProperty = vehicleDetails
+        } else if (lifeInsuranceDetails) {
+            insuredProperty = lifeInsuranceDetails
+        } else if (guaranteeDetails) {
+            insuredProperty = guaranteeDetails
+        } else if (liabilityDetails) {
+            insuredProperty = liabilityDetails
+        } else if (transportDetails) {
+            insuredProperty = transportDetails
+        } else if (engineeringDetails) {
+            insuredProperty = engineeringDetails
+        }
+
+        await prisma.quote.update({
+            where: { id },
+            data: {
+                quoteNumber: quoteNumber || existingQuote.quoteNumber,
+                prospectName: prospectName || null,
+                clientId: clientId || null,
+                agentId: agentId || null,
+                contractorName,
+                contractorRut,
+                contractorEmail: contractorEmail || null,
+                contractorPhone: contractorPhone || null,
+                insuredName: sameAsContractor ? contractorName : (insuredName || null),
+                insuredRut: sameAsContractor ? contractorRut : (insuredRut || null),
+                insuredAddress: insuredAddress || null,
+                beneficiaryName: beneficiaryName || null,
+                beneficiaryRut: beneficiaryRut || null,
+                beneficiaryType: beneficiaryType || null,
+                companyId: finalCompanyId,
+                policyType,
+                insuredProperty: insuredProperty as any,
+                coverages: coverages as any,
+                totalInsuredAmount: totalInsuredAmount ? parseFloat(totalInsuredAmount) : null,
+                totalPremium: parseFloat(totalPremium),
+                currency,
+                validFrom: validFrom || null,
+                validUntil,
+                policyDuration: policyDuration ? parseInt(policyDuration) : null,
+                notes: notes || null,
+                internalNotes: internalNotes || null,
+            },
+        })
+
+        revalidatePath("/dashboard/quotes")
+        revalidatePath(`/dashboard/quotes/${id}`)
+        return { success: "Cotización actualizada exitosamente" }
+    } catch (error) {
+        console.error("Error updating quote:", error)
+        return { error: "Error al actualizar la cotización" }
     }
 }
 
@@ -403,11 +588,11 @@ export const deleteAttachment = async (attachmentId: string) => {
         const attachment = await prisma.quoteAttachment.findUnique({
             where: { id: attachmentId },
             include: {
-                quote: true,
+                Quote: true,
             },
         })
 
-        if (!attachment || attachment.quote.tenantId !== tenantId) {
+        if (!attachment || attachment.Quote.tenantId !== tenantId) {
             return { error: "Archivo no encontrado" }
         }
 
@@ -420,6 +605,99 @@ export const deleteAttachment = async (attachmentId: string) => {
     } catch (error) {
         console.error("Error deleting attachment:", error)
         return { error: "Error al eliminar el archivo" }
+    }
+}
+
+// Crear póliza desde cotización
+export const createPolicyFromQuote = async (quoteId: string) => {
+    const tenantId = await getTenantContext()
+
+    if (!tenantId) {
+        return { error: "No autorizado" }
+    }
+
+    try {
+        const quote = await prisma.quote.findUnique({
+            where: { id: quoteId },
+            include: {
+                Client: true,
+                InsuranceCompany: true,
+                Policy: true,
+            },
+        })
+
+        if (!quote || quote.tenantId !== tenantId) {
+            return { error: "Cotización no encontrada" }
+        }
+
+        // Verificar que la cotización tenga un cliente asociado
+        if (!quote.clientId) {
+            return { error: "La cotización debe tener un cliente asociado para crear una póliza. Edita la cotización y selecciona un cliente existente." }
+        }
+
+        // Verificar que no exista ya una póliza para esta cotización
+        if (quote.Policy) {
+            return { error: "Ya existe una póliza asociada a esta cotización" }
+        }
+
+        // Generar número de póliza
+        const generatePolicyNumber = () => {
+            const date = new Date()
+            const year = date.getFullYear()
+            const random = String(Math.floor(Math.random() * 100000)).padStart(5, '0')
+            return `POL-${year}-${random}`
+        }
+
+        // Calcular fecha de fin basada en duración
+        const startDate = quote.validFrom || new Date()
+        const durationMonths = quote.policyDuration || 12
+        const endDate = new Date(startDate)
+        endDate.setMonth(endDate.getMonth() + durationMonths)
+
+        // Calcular comisión
+        const commissionPercentage = quote.commissionPercentage ? Number(quote.commissionPercentage) : 0
+        const commission = Number(quote.totalPremium) * (commissionPercentage / 100)
+
+        // Crear la póliza
+        const policy = await prisma.policy.create({
+            data: {
+                number: generatePolicyNumber(),
+                company: quote.InsuranceCompany?.name || "Sin compañía",
+                companyId: quote.companyId,
+                agentId: quote.agentId,
+                type: quote.policyType,
+                status: "ACTIVE",
+                startDate: startDate,
+                endDate: endDate,
+                premium: Number(quote.totalPremium),
+                commission: commission,
+                currency: quote.currency,
+                clientId: quote.clientId,
+                tenantId: tenantId,
+                quoteId: quote.id,
+                coverages: quote.coverages as any,
+                insuredProperty: quote.insuredProperty as any,
+            },
+        })
+
+        // Actualizar estado de la cotización a ACCEPTED
+        await prisma.quote.update({
+            where: { id: quoteId },
+            data: { status: "ACCEPTED" },
+        })
+
+        revalidatePath("/dashboard/quotes")
+        revalidatePath(`/dashboard/quotes/${quoteId}`)
+        revalidatePath("/dashboard/policies")
+
+        return {
+            success: `Póliza ${policy.number} creada exitosamente`,
+            policyId: policy.id,
+            policyNumber: policy.number
+        }
+    } catch (error) {
+        console.error("Error creating policy from quote:", error)
+        return { error: "Error al crear la póliza" }
     }
 }
 

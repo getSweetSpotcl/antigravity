@@ -4,6 +4,7 @@ import { getPolicies } from "@/actions/policy"
 import { getClients } from "@/actions/client"
 import { PolicyList } from "@/components/policies/policy-list"
 import { CreatePolicyDialog } from "@/components/policies/create-policy-dialog"
+import { serializeList } from "@/lib/serialize"
 
 const PoliciesPage = async () => {
     const session = await auth()
@@ -12,8 +13,10 @@ const PoliciesPage = async () => {
         redirect("/auth/login")
     }
 
-    const policies = await getPolicies()
+    const policiesRaw = await getPolicies()
     const clients = await getClients()
+
+    const serializedPolicies = serializeList(policiesRaw)
 
     return (
         <div className="space-y-6">
@@ -25,7 +28,7 @@ const PoliciesPage = async () => {
                 <CreatePolicyDialog clients={clients} />
             </div>
 
-            <PolicyList policies={policies} />
+            <PolicyList policies={serializedPolicies} />
         </div>
     );
 }
