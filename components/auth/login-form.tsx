@@ -98,7 +98,7 @@ export const LoginForm = () => {
                                                 disabled={isPending}
                                                 placeholder="tu@email.com"
                                                 type="email"
-                                                className="pl-11 h-12 !bg-white !text-slate-900 !border-slate-200 !placeholder:text-slate-400 focus:border-blue-500 focus:ring-blue-500 transition-all"
+                                                className="pl-11 h-12 bg-white! text-slate-900! border-slate-200! placeholder:text-slate-400! dark:bg-white! dark:text-slate-900! dark:border-slate-200! dark:placeholder:text-slate-400! focus:border-blue-500 focus:ring-blue-500 transition-all"
                                             />
                                         </div>
                                     </FormControl>
@@ -128,7 +128,7 @@ export const LoginForm = () => {
                                                 disabled={isPending}
                                                 placeholder="••••••••"
                                                 type="password"
-                                                className="pl-11 h-12 !bg-white !text-slate-900 !border-slate-200 !placeholder:text-slate-400 focus:border-blue-500 focus:ring-blue-500 transition-all"
+                                                className="pl-11 h-12 bg-white! text-slate-900! border-slate-200! placeholder:text-slate-400! dark:bg-white! dark:text-slate-900! dark:border-slate-200! dark:placeholder:text-slate-400! focus:border-blue-500 focus:ring-blue-500 transition-all"
                                             />
                                         </div>
                                     </FormControl>

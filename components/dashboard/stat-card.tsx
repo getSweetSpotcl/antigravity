@@ -1,12 +1,37 @@
 "use client"
 
-import { LucideIcon, TrendingUp, TrendingDown, Minus } from "lucide-react"
+import {
+  TrendingUp,
+  TrendingDown,
+  Minus,
+  FileCheck,
+  FileText,
+  AlertTriangle,
+  Wallet,
+  Users,
+  Building2,
+  Calendar,
+  DollarSign,
+} from "lucide-react"
 import { cn } from "@/lib/utils"
+
+const iconMap = {
+  FileCheck,
+  FileText,
+  AlertTriangle,
+  Wallet,
+  Users,
+  Building2,
+  Calendar,
+  DollarSign,
+} as const
+
+type IconName = keyof typeof iconMap
 
 interface StatCardProps {
   title: string
   value: string | number
-  icon: LucideIcon
+  icon: IconName
   trend?: {
     value: number
     label?: string
@@ -19,12 +44,13 @@ interface StatCardProps {
 export function StatCard({
   title,
   value,
-  icon: Icon,
+  icon,
   trend,
   iconBgColor = "bg-sky-100 dark:bg-sky-900/30",
   iconColor = "text-sky-600 dark:text-sky-400",
   className,
 }: StatCardProps) {
+  const Icon = iconMap[icon]
   const getTrendIcon = () => {
     if (!trend) return null
     if (trend.value > 0) return <TrendingUp className="h-4 w-4" />

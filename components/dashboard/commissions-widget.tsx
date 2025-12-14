@@ -51,9 +51,9 @@ interface CommissionsWidgetProps {
 export function CommissionsWidget({ summary, agentSummary }: CommissionsWidgetProps) {
     if (!summary) {
         return (
-            <div className="bg-white rounded-xl border border-slate-200 shadow-sm">
-                <div className="p-6 border-b border-slate-200">
-                    <h3 className="text-lg font-semibold text-slate-800 flex items-center gap-3">
+            <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                <div className="p-6 border-b border-slate-200 dark:border-slate-700">
+                    <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center">
                             <Wallet className="h-5 w-5 text-emerald-600" />
                         </div>
@@ -81,9 +81,9 @@ export function CommissionsWidget({ summary, agentSummary }: CommissionsWidgetPr
     const totalAmount = pending.amount + overdue.amount
 
     return (
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm">
-            <div className="p-6 border-b border-slate-200 flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-slate-800 flex items-center gap-3">
+        <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+            <div className="p-6 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center">
                         <Wallet className="h-5 w-5 text-emerald-600" />
                     </div>

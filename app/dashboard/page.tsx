@@ -1,11 +1,5 @@
 import { auth } from "@/lib/auth"
 import { redirect } from "next/navigation"
-import {
-    FileText,
-    AlertTriangle,
-    Wallet,
-    FileCheck
-} from "lucide-react"
 import { getDashboardStats, getRenewalAlerts, getRecentActivity } from "@/actions/dashboard"
 import { getCommissionsDashboardSummary } from "@/actions/commission"
 import { getAgentCommissionsDashboardSummary } from "@/actions/agent-commission"
@@ -46,7 +40,7 @@ export default async function DashboardPage() {
                 <StatCard
                     title="Pólizas Activas"
                     value={stats?.activePolicies || 0}
-                    icon={FileCheck}
+                    icon="FileCheck"
                     iconBgColor="bg-sky-100 dark:bg-sky-900/30"
                     iconColor="text-sky-600 dark:text-sky-400"
                 />
@@ -54,7 +48,7 @@ export default async function DashboardPage() {
                 <StatCard
                     title="Cotizaciones"
                     value={stats?.recentQuotes || 0}
-                    icon={FileText}
+                    icon="FileText"
                     iconBgColor="bg-emerald-100 dark:bg-emerald-900/30"
                     iconColor="text-emerald-600 dark:text-emerald-400"
                 />
@@ -62,7 +56,7 @@ export default async function DashboardPage() {
                 <StatCard
                     title="Siniestros Activos"
                     value={stats?.activeClaims || 0}
-                    icon={AlertTriangle}
+                    icon="AlertTriangle"
                     trend={(stats?.activeClaims || 0) > 0 ? { value: -(stats?.activeClaims || 0) } : undefined}
                     iconBgColor="bg-amber-100 dark:bg-amber-900/30"
                     iconColor="text-amber-600 dark:text-amber-400"
@@ -74,7 +68,7 @@ export default async function DashboardPage() {
                         minimumFractionDigits: 0,
                         maximumFractionDigits: 0,
                     })} UF`}
-                    icon={Wallet}
+                    icon="Wallet"
                     iconBgColor="bg-violet-100 dark:bg-violet-900/30"
                     iconColor="text-violet-600 dark:text-violet-400"
                 />

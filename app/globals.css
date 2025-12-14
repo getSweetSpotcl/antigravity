@@ -102,47 +102,61 @@
   --sidebar-ring: hsl(199 89% 58%);
 }
 
+/* GiCS Dark Mode - Professional Slate Theme */
 .dark {
-  --background: hsl(222.2 84% 4.9%);
+  /* Background - Deep slate, not pure black */
+  --background: hsl(222 47% 11%);
   --foreground: hsl(210 40% 98%);
 
-  --card: hsl(222.2 84% 4.9%);
+  /* Cards - Slightly lighter for contrast */
+  --card: hsl(217 33% 17%);
   --card-foreground: hsl(210 40% 98%);
 
-  --popover: hsl(222.2 84% 4.9%);
+  /* Popovers - Same as cards */
+  --popover: hsl(217 33% 17%);
   --popover-foreground: hsl(210 40% 98%);
 
-  --primary: hsl(217.2 91.2% 59.8%);
-  --primary-foreground: hsl(222.2 47.4% 11.2%);
+  /* Primary - Cyan accent (GiCS brand) */
+  --primary: hsl(187 85% 53%);
+  --primary-foreground: hsl(222 47% 11%);
 
-  --secondary: hsl(217.2 32.6% 17.5%);
+  /* Secondary - Muted slate */
+  --secondary: hsl(215 28% 23%);
   --secondary-foreground: hsl(210 40% 98%);
 
-  --muted: hsl(217.2 32.6% 17.5%);
-  --muted-foreground: hsl(215 20.2% 65.1%);
+  /* Muted - For subtle backgrounds */
+  --muted: hsl(215 28% 20%);
+  --muted-foreground: hsl(215 20% 65%);
 
-  --accent: hsl(217.2 32.6% 17.5%);
-  --accent-foreground: hsl(210 40% 98%);
+  /* Accent - Cyan lighter */
+  --accent: hsl(215 28% 23%);
+  --accent-foreground: hsl(187 85% 63%);
 
-  --destructive: hsl(0 62.8% 30.6%);
-  --destructive-foreground: hsl(210 40% 98%);
+  /* Destructive - Softer red for dark mode */
+  --destructive: hsl(0 63% 45%);
+  --destructive-foreground: hsl(0 0% 100%);
 
-  --border: hsl(217.2 32.6% 17.5%);
-  --input: hsl(217.2 32.6% 17.5%);
-  --ring: hsl(212.7 26.8% 83.9%);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  /* Borders - Visible but subtle */
+  --border: hsl(215 28% 25%);
+  --input: hsl(215 28% 20%);
+  --ring: hsl(187 85% 53%);
+
+  /* Chart colors - Vibrant for visibility */
+  --chart-1: hsl(187 85% 53%);
+  --chart-2: hsl(160 84% 45%);
+  --chart-3: hsl(262 83% 65%);
+  --chart-4: hsl(43 96% 56%);
+  --chart-5: hsl(0 72% 55%);
+
+  /* Sidebar - Darker for hierarchy */
+  --sidebar: hsl(222 47% 9%);
+  --sidebar-foreground: hsl(210 40% 95%);
+  --sidebar-primary: hsl(187 85% 53%);
+  --sidebar-primary-foreground: hsl(222 47% 11%);
+  --sidebar-accent: hsl(215 28% 18%);
+  --sidebar-accent-foreground: hsl(187 85% 63%);
+  --sidebar-border: hsl(215 28% 20%);
+  --sidebar-ring: hsl(187 85% 53%);
 }
 
 @layer base {
@@ -206,7 +220,7 @@
   box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.08);
 }
 
-/* Stat card gradients */
+/* Stat card gradients - Light mode */
 .stat-card-blue {
   background: linear-gradient(135deg, hsl(217 91% 98%) 0%, hsl(217 91% 95%) 100%);
   border: 1px solid hsl(217 91% 90%);
@@ -225,6 +239,27 @@
 .stat-card-purple {
   background: linear-gradient(135deg, hsl(262 83% 98%) 0%, hsl(262 83% 94%) 100%);
   border: 1px solid hsl(262 83% 88%);
+}
+
+/* Stat card gradients - Dark mode */
+.dark .stat-card-blue {
+  background: linear-gradient(135deg, hsl(217 50% 18%) 0%, hsl(217 50% 15%) 100%);
+  border: 1px solid hsl(217 50% 25%);
+}
+
+.dark .stat-card-teal {
+  background: linear-gradient(135deg, hsl(173 40% 16%) 0%, hsl(173 40% 13%) 100%);
+  border: 1px solid hsl(173 40% 22%);
+}
+
+.dark .stat-card-amber {
+  background: linear-gradient(135deg, hsl(43 50% 15%) 0%, hsl(43 50% 12%) 100%);
+  border: 1px solid hsl(43 50% 22%);
+}
+
+.dark .stat-card-purple {
+  background: linear-gradient(135deg, hsl(262 40% 18%) 0%, hsl(262 40% 15%) 100%);
+  border: 1px solid hsl(262 40% 25%);
 }
 
 /* Sidebar active state glow */
@@ -269,15 +304,21 @@
 
 /* Glass morphism effects */
 .glass {
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.dark .glass {
+  background: rgba(30, 41, 59, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 .glass-dark {
-  background: rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 /* Hide number input spinners */
