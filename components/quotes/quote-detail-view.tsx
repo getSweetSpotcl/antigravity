@@ -77,10 +77,10 @@ interface QuoteDetailViewProps {
 }
 
 const statusConfig = {
-    DRAFT: { label: "Borrador", color: "bg-slate-100 text-slate-700", icon: FileText },
-    SENT: { label: "Enviada", color: "bg-blue-100 text-blue-700", icon: Send },
-    ACCEPTED: { label: "Aceptada", color: "bg-emerald-100 text-emerald-700", icon: CheckCircle2 },
-    REJECTED: { label: "Rechazada", color: "bg-red-100 text-red-700", icon: XCircle },
+    DRAFT: { label: "Borrador", color: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-400", icon: FileText },
+    SENT: { label: "Enviada", color: "bg-blue-100 text-blue-700 dark:bg-blue-950/50 dark:text-blue-400", icon: Send },
+    ACCEPTED: { label: "Aceptada", color: "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400", icon: CheckCircle2 },
+    REJECTED: { label: "Rechazada", color: "bg-red-100 text-red-700 dark:bg-red-950/50 dark:text-red-400", icon: XCircle },
 }
 
 export function QuoteDetailView({ quote, clients, companies, currentUser }: QuoteDetailViewProps) {
@@ -207,7 +207,7 @@ export function QuoteDetailView({ quote, clients, companies, currentUser }: Quot
                         <Button
                             variant="outline"
                             onClick={() => router.push(`/dashboard/policies/${quote.Policy?.id}`)}
-                            className="border-emerald-500 text-emerald-700 hover:bg-emerald-50"
+                            className="border-emerald-500 text-emerald-700 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950/30"
                         >
                             <CheckCircle2 className="mr-2 h-4 w-4" />
                             Ver Póliza
@@ -328,8 +328,8 @@ export function QuoteDetailView({ quote, clients, companies, currentUser }: Quot
 
                                 {(quote as any).particularConditions && (
                                     <div className="mt-4 pt-4 border-t">
-                                        <p className="text-xs font-medium text-slate-500 mb-1">Condiciones Particulares:</p>
-                                        <p className="text-sm whitespace-pre-wrap bg-slate-50 p-2 rounded border">
+                                        <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Condiciones Particulares:</p>
+                                        <p className="text-sm whitespace-pre-wrap bg-slate-50 dark:bg-slate-800 p-2 rounded border dark:border-slate-700">
                                             {(quote as any).particularConditions}
                                         </p>
                                     </div>
@@ -442,7 +442,7 @@ export function QuoteDetailView({ quote, clients, companies, currentUser }: Quot
                                 </Card>
                             )}
                             {quote.internalNotes && (
-                                <Card className="bg-yellow-50">
+                                <Card className="bg-yellow-50 dark:bg-yellow-950/30 border-yellow-200 dark:border-yellow-800">
                                     <CardHeader>
                                         <CardTitle className="text-base">Notas Internas</CardTitle>
                                     </CardHeader>
@@ -472,12 +472,12 @@ export function QuoteDetailView({ quote, clients, companies, currentUser }: Quot
                         <CardContent className="space-y-4">
                             <div className="space-y-3">
                                 {coverages.map((coverage: any, index: number) => (
-                                    <div key={index} className="flex justify-between items-start p-4 bg-slate-50 rounded-lg border">
+                                    <div key={index} className="flex justify-between items-start p-4 bg-slate-50 dark:bg-slate-800 rounded-lg border dark:border-slate-700">
                                         <div className="flex-1">
                                             <h4 className="font-medium">
                                                 {coverage.name}
                                                 {coverage.cadNumber && (
-                                                    <span className="ml-2 text-xs font-normal text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">
+                                                    <span className="ml-2 text-xs font-normal text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/50 px-2 py-0.5 rounded border border-blue-100 dark:border-blue-800">
                                                         CAD: {coverage.cadNumber}
                                                     </span>
                                                 )}
@@ -497,7 +497,7 @@ export function QuoteDetailView({ quote, clients, companies, currentUser }: Quot
                                             </div>
                                         </div>
                                         <div className="text-right">
-                                            <div className="text-lg font-bold text-blue-600">
+                                            <div className="text-lg font-bold text-blue-600 dark:text-blue-400">
                                                 {parseFloat(coverage.premium || "0").toFixed(2)} {quote.currency}
                                             </div>
                                             <div className="text-xs text-muted-foreground">Prima Neta</div>
@@ -508,7 +508,7 @@ export function QuoteDetailView({ quote, clients, companies, currentUser }: Quot
 
                             <Separator />
 
-                            <div className="flex justify-between items-center bg-blue-50 p-6 rounded-lg">
+                            <div className="flex justify-between items-center bg-blue-50 dark:bg-blue-950/30 p-6 rounded-lg border border-blue-100 dark:border-blue-800">
                                 <div>
                                     <div className="text-sm text-muted-foreground">Prima Total Neta</div>
                                     {quote.totalInsuredAmount && (
@@ -517,7 +517,7 @@ export function QuoteDetailView({ quote, clients, companies, currentUser }: Quot
                                         </div>
                                     )}
                                 </div>
-                                <div className="text-3xl font-bold text-blue-700">
+                                <div className="text-3xl font-bold text-blue-700 dark:text-blue-400">
                                     {parseFloat(quote.totalPremium || "0").toFixed(2)} {quote.currency}
                                 </div>
                             </div>
@@ -560,22 +560,22 @@ export function QuoteDetailView({ quote, clients, companies, currentUser }: Quot
                         <AlertDialogDescription asChild>
                             <div className="text-sm text-muted-foreground">
                                 <p>Se creará una nueva póliza con los datos de esta cotización.</p>
-                                <div className="mt-4 p-4 bg-slate-50 rounded-lg space-y-2 text-sm">
+                                <div className="mt-4 p-4 bg-slate-50 dark:bg-slate-800 rounded-lg space-y-2 text-sm border dark:border-slate-700">
                                     <div className="flex justify-between">
-                                        <span className="text-slate-600">Cliente:</span>
+                                        <span className="text-slate-600 dark:text-slate-400">Cliente:</span>
                                         <span className="font-medium">{clientName}</span>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span className="text-slate-600">Compañía:</span>
+                                        <span className="text-slate-600 dark:text-slate-400">Compañía:</span>
                                         <span className="font-medium">{quote.InsuranceCompany?.name}</span>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span className="text-slate-600">Prima:</span>
+                                        <span className="text-slate-600 dark:text-slate-400">Prima:</span>
                                         <span className="font-medium">{quote.totalPremium} {quote.currency}</span>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span className="text-slate-600">Comisión ({(quote as any).commissionPercentage || 0}%):</span>
-                                        <span className="font-medium text-emerald-600">
+                                        <span className="text-slate-600 dark:text-slate-400">Comisión ({(quote as any).commissionPercentage || 0}%):</span>
+                                        <span className="font-medium text-emerald-600 dark:text-emerald-400">
                                             {(Number(quote.totalPremium) * (((quote as any).commissionPercentage || 0) / 100)).toFixed(2)} {quote.currency}
                                         </span>
                                     </div>

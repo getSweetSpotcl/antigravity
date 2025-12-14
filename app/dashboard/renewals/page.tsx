@@ -44,9 +44,9 @@ export default async function Page() {
             </div>
 
             {criticalPolicies.length > 0 && (
-                <Card className="border-orange-200 bg-orange-50">
+                <Card className="border-orange-200 dark:border-orange-800 bg-orange-50 dark:bg-orange-950/30">
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2 text-orange-800">
+                        <CardTitle className="flex items-center gap-2 text-orange-800 dark:text-orange-200">
                             <AlertCircle className="h-5 w-5" />
                             Pólizas Críticas (Vencen en 15 días o menos)
                         </CardTitle>

@@ -15,10 +15,10 @@ interface PolicyListProps {
 }
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; dot: string }> = {
-    ACTIVE: { label: "Vigente", color: "bg-emerald-100 text-emerald-700 border-emerald-200", dot: "bg-emerald-500" },
-    EXPIRED: { label: "Vencida", color: "bg-red-100 text-red-700 border-red-200", dot: "bg-red-500" },
-    CANCELLED: { label: "Anulada", color: "bg-slate-100 text-slate-700 border-slate-200", dot: "bg-slate-400" },
-    RENEWED: { label: "Renovada", color: "bg-blue-100 text-blue-700 border-blue-200", dot: "bg-blue-500" },
+    ACTIVE: { label: "Vigente", color: "bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-400 dark:border-emerald-800", dot: "bg-emerald-500" },
+    EXPIRED: { label: "Vencida", color: "bg-red-100 text-red-700 border-red-200 dark:bg-red-950/50 dark:text-red-400 dark:border-red-800", dot: "bg-red-500" },
+    CANCELLED: { label: "Anulada", color: "bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700", dot: "bg-slate-400" },
+    RENEWED: { label: "Renovada", color: "bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-950/50 dark:text-blue-400 dark:border-blue-800", dot: "bg-blue-500" },
 }
 
 const TYPE_LABELS: Record<string, string> = {
@@ -169,7 +169,7 @@ export const PolicyList = ({ policies }: PolicyListProps) => {
             ),
             cell: ({ row }) => (
                 <div className="text-right">
-                    <span className="font-bold text-teal-700 tabular-nums">
+                    <span className="font-bold text-teal-700 dark:text-teal-400 tabular-nums">
                         {Number(row.original.premium).toLocaleString("es-CL", { minimumFractionDigits: 2 })}
                     </span>
                     <span className="text-xs font-medium text-muted-foreground ml-1">{row.original.currency}</span>
@@ -201,7 +201,7 @@ export const PolicyList = ({ policies }: PolicyListProps) => {
     }
 
     return (
-        <Card className="border-slate-200/80 shadow-sm">
+        <Card className="border-slate-200/80 dark:border-slate-700 shadow-sm">
             <CardHeader className="pb-4">
                 <CardTitle className="text-xl font-bold tracking-tight">Pólizas</CardTitle>
             </CardHeader>

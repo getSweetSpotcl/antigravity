@@ -42,11 +42,11 @@ const STATUS_LABELS: Record<CommissionStatus, string> = {
 }
 
 const STATUS_COLORS: Record<CommissionStatus, string> = {
-    PENDING: "bg-slate-100 text-slate-700 border-slate-200",
-    PARTIAL: "bg-blue-100 text-blue-700 border-blue-200",
-    PAID: "bg-emerald-100 text-emerald-700 border-emerald-200",
-    OVERDUE: "bg-red-100 text-red-700 border-red-200",
-    CANCELLED: "bg-gray-100 text-gray-700 border-gray-200",
+    PENDING: "bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700",
+    PARTIAL: "bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-950/50 dark:text-blue-400 dark:border-blue-800",
+    PAID: "bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-400 dark:border-emerald-800",
+    OVERDUE: "bg-red-100 text-red-700 border-red-200 dark:bg-red-950/50 dark:text-red-400 dark:border-red-800",
+    CANCELLED: "bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700",
 }
 
 const statusOptions = [
@@ -289,7 +289,7 @@ export function CommissionList({ commissions }: CommissionListProps) {
                 <CardHeader>
                     <CardTitle>Comisiones</CardTitle>
                     {/* Resumen de totales */}
-                    <div className="grid grid-cols-3 gap-4 mt-4 p-4 bg-muted/50 rounded-lg">
+                    <div className="grid grid-cols-3 gap-4 mt-4 p-4 bg-muted/50 dark:bg-slate-800/50 rounded-lg">
                         <div>
                             <p className="text-sm text-muted-foreground">Total Comisiones</p>
                             <p className="text-lg font-bold">
@@ -298,13 +298,13 @@ export function CommissionList({ commissions }: CommissionListProps) {
                         </div>
                         <div>
                             <p className="text-sm text-muted-foreground">Pagado</p>
-                            <p className="text-lg font-bold text-green-600">
+                            <p className="text-lg font-bold text-green-600 dark:text-green-400">
                                 {totals.paid.toLocaleString("es-CL", { minimumFractionDigits: 2 })} UF
                             </p>
                         </div>
                         <div>
                             <p className="text-sm text-muted-foreground">Pendiente</p>
-                            <p className="text-lg font-bold text-orange-600">
+                            <p className="text-lg font-bold text-orange-600 dark:text-orange-400">
                                 {totals.pending.toLocaleString("es-CL", { minimumFractionDigits: 2 })} UF
                             </p>
                         </div>
